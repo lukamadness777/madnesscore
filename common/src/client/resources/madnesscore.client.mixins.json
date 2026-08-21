@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.lukamadness.madnesscore.common.client.mixin",
+  "refmap": "${mod_id}.refmap.json",
+  "compatibilityLevel": "JAVA_18",
+  "mixins": [],
+  "client": [
+    "MixinMinecraft",
+    "MixinCreativeModeInventoryScreen",
+    "MixinInventoryScreen",
+    "MixinAbstractContainerScreen",
+    "MixinAbstractWidget",
+    "MixinPlayerDynamicSlotActive",
+    "AbstractContainerScreenAccessor",
+    "CreativeModeInventoryScreenAccessor",
+    "ItemPickerMenuAccessor",
+    "SlotWrapperAccessor",
+    "SlotAccessor",
+    "MixinLivingEntityRendererSlots",
+    "MixinAbstractContainerScreenRemoved",
+    "MixinScreenTick"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

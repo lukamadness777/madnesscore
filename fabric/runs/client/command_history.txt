@@ -1,0 +1,15 @@
+/weather clear
+/tp 2000000 100 20000000
+/spawnpoint Player556 2000086 63 19999945
+/kill
+/tp 2000000 100 20000000
+/spawnpoint Player556 2000086 63 19999945 10
+/kill
+/tp 2000000 100 20000000
+/attribute Player78 minecraft:generic.armor get
+/time set day
+/effect clear
+/kill
+/give Player105 madnesscore:alloy_smeltery
+/give Player105 madnesscore:heat_generator
+/give Player105 madnesscore:energy_converter

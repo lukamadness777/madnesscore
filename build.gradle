@@ -1,0 +1,30 @@
+plugins {
+    // see https://fabricmc.net/develop/ for new versions
+    id 'fabric-loom' version '1.17-SNAPSHOT' apply false
+    // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
+    id 'net.neoforged.moddev' version '0.1.110' apply false
+}
+
+subprojects {
+    repositories {
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+            content {
+                includeGroup "maven.modrinth"
+            }
+        }
+        flatDir {
+            dirs rootProject.file('libs')
+        }
+        maven {
+            url "https://cursemaven.com"
+        }
+        maven {
+            url = uri("https://registry.somethingcatchy.net/repository/maven-releases/")
+            content {
+                includeGroup("com.ninni.dye_depot")
+            }
+        }
+    }
+}

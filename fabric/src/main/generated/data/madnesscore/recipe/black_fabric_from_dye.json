@@ -1,0 +1,60 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    [
+      {
+        "item": "madnesscore:white_fabric"
+      },
+      {
+        "item": "madnesscore:orange_fabric"
+      },
+      {
+        "item": "madnesscore:magenta_fabric"
+      },
+      {
+        "item": "madnesscore:light_blue_fabric"
+      },
+      {
+        "item": "madnesscore:yellow_fabric"
+      },
+      {
+        "item": "madnesscore:lime_fabric"
+      },
+      {
+        "item": "madnesscore:pink_fabric"
+      },
+      {
+        "item": "madnesscore:gray_fabric"
+      },
+      {
+        "item": "madnesscore:light_gray_fabric"
+      },
+      {
+        "item": "madnesscore:cyan_fabric"
+      },
+      {
+        "item": "madnesscore:purple_fabric"
+      },
+      {
+        "item": "madnesscore:blue_fabric"
+      },
+      {
+        "item": "madnesscore:brown_fabric"
+      },
+      {
+        "item": "madnesscore:green_fabric"
+      },
+      {
+        "item": "madnesscore:red_fabric"
+      }
+    ],
+    {
+      "item": "minecraft:black_dye"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "madnesscore:black_fabric"
+  }
+}

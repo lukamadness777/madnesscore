@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "minecraft:string"
+    },
+    "W": {
+      "item": "minecraft:light_blue_wool"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "SWS",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "madnesscore:light_blue_fabric"
+  }
+}

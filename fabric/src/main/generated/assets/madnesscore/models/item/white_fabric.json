@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "madnesscore:item/fabric/white_fabric"
+  }
+}

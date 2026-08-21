@@ -1,0 +1,73 @@
+plugins {
+    id 'multiloader-loader'
+    id 'fabric-loom'
+}
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+
+    // Dye Depot
+    modCompileOnly "com.ninni.dye_depot:dye_depot-fabric:1.21.1-2.1.1"
+    modLocalRuntime "com.ninni.dye_depot:dye_depot-fabric:1.21.1-2.1.1"
+}
+
+loom {
+    def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+    mixin {
+        defaultRefmapName.set("${mod_id}.refmap.json")
+    }
+    splitEnvironmentSourceSets()
+
+    interfaceInjection {
+        enableDependencyInterfaceInjection = false
+    }
+
+    sourceSets {
+        client
+        main {
+            resources {
+                srcDir 'src/main/generated'
+            }
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+    runs {
+        client {
+            client()
+            setConfigName('Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
+        }
+        datagen {
+            inherit server
+            source sourceSets.client
+            name 'Data Generation'
+            vmArg '-Dfabric-api.datagen'
+            vmArg "-Dfabric-api.datagen.output-dir=${file('src/main/generated')}"
+            vmArg "-Dfabric-api.datagen.modid=${mod_id}"
+            setConfigName('Fabric Datagen')
+            ideConfigGenerated(true)
+            runDir('runs/datagen')
+        }
+    }
+}

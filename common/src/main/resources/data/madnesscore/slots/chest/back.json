@@ -1,0 +1,7 @@
+{
+  "icon": "madnesscore:gui/slots/back",
+  "order": -512,
+  "validator_predicates": ["madnesscore:tag"],
+  "tooltip_predicates": ["madnesscore:tag"],
+  "mirror_vanilla_equipment": true
+}

@@ -1,0 +1,7 @@
+{
+	"parent": "madnesscore:block/heat_generator_template",
+	"textures": {
+		"particle": "madnesscore:block/heat_generator/heat_generator_on",
+		"main": "madnesscore:block/heat_generator/heat_generator_on"
+	}
+}

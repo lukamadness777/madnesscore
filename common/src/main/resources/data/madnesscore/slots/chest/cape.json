@@ -1,0 +1,6 @@
+{
+  "icon": "madnesscore:gui/slots/cape",
+  "order": -256,
+  "validator_predicates": ["madnesscore:tag"],
+  "tooltip_predicates": ["madnesscore:tag"]
+}
