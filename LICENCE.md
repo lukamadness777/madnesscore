@@ -10,6 +10,10 @@ as permitted under that license.
 
 Required Notice: Copyright LukaMadness
 
+Licensor Line of Business: Madness Core for Minecraft 1.21.1 and later
+versions (including future Minecraft releases the Licensor may target going
+forward).
+
 ---
 
 ## PolyForm Shield License 1.0.0
