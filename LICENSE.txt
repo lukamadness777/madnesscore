@@ -8,7 +8,7 @@ Exception"). The base PolyForm Shield text is unmodified and reproduced in
 full; the supplementary term is clearly marked as an addition by the Licensor,
 as permitted under that license.
 
-Required Notice: Copyright LukaMadness (dev.lukamadness)
+Required Notice: Copyright LukaMadness
 
 ---
 
