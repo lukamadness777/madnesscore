@@ -76,32 +76,6 @@ services compete even when provided free of charge. If you market a product
 as a practical substitute for the software or another product, it definitely
 competes.
 
-### Version Porting Exception
-
-*(Supplementary term added by the Licensor, as permitted under this license.)*
-
-Notwithstanding the Competition section above, providing a straightforward
-port of the software (or a work based on it) for a version of Minecraft that,
-at the time you provide it, the Licensor's software does not officially
-support and has not publicly announced plans to support, does not by itself
-make that product compete with the software.
-
-For the purposes of this exception:
-
-- A **"straightforward port"** means a version whose changes are reasonably
-  limited to what is needed to make the software function correctly on the
-  target Minecraft version (e.g. updated mappings, updated dependencies,
-  compatibility fixes). It does not include a product that reproduces
-  substantially all of the functionality of the software while adding new
-  original content, systems, or features beyond what a reasonable port
-  requires — such a product remains subject to the Competition section
-  regardless of which Minecraft version it targets.
-- If the Licensor later officially supports, or publicly announces plans to
-  support, a Minecraft version previously covered by this exception, the
-  exception ceases to apply to any new copies provided for that version from
-  that point forward. Copies already provided before that announcement are
-  not affected.
-
 ### New Products
 
 If you are using the software to provide a product that does not compete, but
