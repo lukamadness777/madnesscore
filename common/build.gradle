@@ -5,22 +5,32 @@ plugins {
 
 neoForge {
     neoFormVersion = neo_form_version
-    // Automatically enable AccessTransformers if the file exists
+
     def at = file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
-        accessTransformers.add(at.absolutePath)
+        accessTransformers.files.from(at)
     }
+
     parchment {
         minecraftVersion = parchment_minecraft
         mappingsVersion = parchment_version
     }
 }
 
+
 dependencies {
-    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
-    // fabric and neoforge both bundle mixinextras, so it is safe to use it in common
-    compileOnly group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.3.5'
     annotationProcessor group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.3.5'
+    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
+    compileOnly group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.3.5'
+
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "maven.modrinth:1W98a849:S2Ln2tIn"
+    compileOnly "maven.modrinth:nvQzSEkH:eYz2YBGT"
+    compileOnly "xaero.map:xaeroworldmap-common-${minecraft_version}:${xaeroworldmap_version}"
+    compileOnly "xaero.minimap:xaerominimap-common-${minecraft_version}:${xaerominimap_version}"
+    compileOnly "info.journeymap:journeymap-api-common:${journeymap_api_version}-${minecraft_version}"
+
+    implementation "software.bernie.geckolib:geckolib-common-${minecraft_version}:${geckolib_version}"
 }
 
 sourceSets {

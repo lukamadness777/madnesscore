@@ -2,8 +2,36 @@ plugins {
     // see https://fabricmc.net/develop/ for new versions
     id 'fabric-loom' version '1.17-SNAPSHOT' apply false
     // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
-    id 'net.neoforged.moddev' version '0.1.110' apply false
+    id 'net.neoforged.moddev' version '2.0.144' apply false
 }
+
+tasks.register("buildAll") {
+    group = "imtoolazy"
+    description = "Builds common, fabric y neoforge"
+    dependsOn(
+            ":common:build",
+            ":fabric:build",
+            ":neoforge:build"
+    )
+}
+
+tasks.register("publish") {
+    group = "imtoolazy"
+    description = "Publica common, fabric y neoforge en maven local"
+    dependsOn(
+            ":common:publish",
+            ":fabric:publish",
+            ":neoforge:publish"
+    )
+}
+
+tasks.register("buildAndPublishAll") {
+    group = "imtoolazy"
+    description = "Builds los 3 y despues los publica en maven local"
+    dependsOn(buildAll, publish)
+}
+
+publish.mustRunAfter(buildAll)
 
 subprojects {
     repositories {
@@ -25,6 +53,26 @@ subprojects {
             content {
                 includeGroup("com.ninni.dye_depot")
             }
+        }
+        maven { url = "https://maven.blamejared.com" }
+        maven {
+            name = 'GeckoLib'
+            url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+            content {
+                includeGroup("software.bernie.geckolib")
+            }
+        }
+        maven {
+            name = "Terraformers"
+            url = "https://maven.terraformersmc.com/"
+        }
+        maven {
+            url "https://chocolateminecraft.com/maven"
+            name "Xaero's Maven"
+        }
+        maven {
+            url = "https://maven.blamejared.com"
+            name = "JourneyMap"
         }
     }
 }

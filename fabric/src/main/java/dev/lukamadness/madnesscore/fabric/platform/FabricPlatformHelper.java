@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public class FabricPlatformHelper implements IPlatformHelper {
-
     @Override
     public String getPlatformName() {
         return "Fabric";

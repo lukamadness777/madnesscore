@@ -7,13 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Objects;
 import java.util.Set;
 
-/**
- * Definicion inmutable de un tipo de slot dentro de un {@link SlotGroup} (ej: "hand/ring").
- * Portado de dev.emi.trinkets.api.SlotType, adaptado a Madness Core (multiloader, sin dependencias
- * de Fabric API en el codigo common).
- */
 public final class SlotType {
-
     private final String group;
     private final String name;
     private final int order;
@@ -32,30 +26,6 @@ public final class SlotType {
                 dropRule, false);
     }
 
-    /**
-     * @param mirrorsVanillaEquipment si {@code true}, mientras haya equipada aca una pieza de
-     * armadura real (compatible con el {@link net.minecraft.world.entity.EquipmentSlot} al que
-     * este slot esta anclado via {@code group.json#slot_id}) y el {@code EquipmentSlot} vainilla
-     * real de la entidad este vacio, vainilla la "ve" ahi para efectos de stats y comportamiento
-     * (respiracion de agua del casco de tortuga, encantamientos de armadura como Proteccion,
-     * Espinas, Paso Helado, etc.) - ver {@code VanillaEquipmentMirror} y
-     * {@code MixinLivingEntityEquipmentMirror#getItemBySlot}.
-     * <p>
-     * Es un espejo de SOLO LECTURA: nunca se copia ni se mueve el stack a ningun lado, sigue
-     * viviendo unicamente en este {@code SlotInventory}. Si el slot vainilla real ya tiene algo
-     * puesto, ese algo siempre gana y no se compara ni se pisa.
-     * <p>
-     * FIX (bug de duplicacion en "hat"): por defecto es {@code false}. Antes existio una version
-     * de este mecanismo que copiaba el stack via {@code entity.setItemSlot(...)}
-     * ({@code SlotTicker#mirrorToVanillaEquipment}, eliminado) - eso hacia que el item quedara
-     * existiendo a la vez como dos referencias independientes (una en el inventario de trinkets,
-     * otra en el array de equipo real), duplicandolo. Ademas, disparar el espejado para
-     * CUALQUIER slot type de un grupo anclado a un slot_id de armadura (ej: "head/hat" junto con
-     * "head/face", que comparten grupo) tambien estaba mal: "face" es un slot cosmetico/accesorio
-     * que NO deberia tocar el slot de armadura real. Por eso hace falta optar explicitamente por
-     * este comportamiento poniendo {@code "mirror_vanilla_equipment": true} en el JSON del slot
-     * type que si deba ser funcional (ej: "head/hat", "chest/back", "feet/shoes").
-     */
     public SlotType(String group, String name, int order, int amount, ResourceLocation icon,
                     Set<ResourceLocation> quickMovePredicates, Set<ResourceLocation> validatorPredicates,
                     Set<ResourceLocation> tooltipPredicates, DropRule dropRule, boolean mirrorsVanillaEquipment) {
@@ -111,9 +81,6 @@ public final class SlotType {
         return mirrorsVanillaEquipment;
     }
 
-    /**
-     * @return el id compuesto "group/name" que identifica este slot de forma unica.
-     */
     public String getId() {
         return this.group + "/" + this.name;
     }

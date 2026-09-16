@@ -20,12 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/**
- * Inventario (de un solo {@link SlotType}) que respeta modificadores de atributo de cantidad de
- * slot (ver {@link SlotAttributes}). Portado de dev.emi.trinkets.api.TrinketInventory.
- */
 public class SlotInventory implements Container {
-
     private final SlotType slotType;
     private final int baseSize;
     private final SlotComponent component;
@@ -96,12 +91,14 @@ public class SlotInventory implements Container {
     @Override
     public void setItem(int slot, ItemStack stack) {
         this.recalculateSize();
+        ItemStack previous = slot < stacks.size() ? stacks.get(slot) : ItemStack.EMPTY;
+        if (!stack.isEmpty() || !previous.isEmpty()) {
+        }
         stacks.set(slot, stack);
     }
 
     @Override
     public void setChanged() {
-        // NO-OP: la persistencia la maneja el SlotComponent duenio.
     }
 
     public void markUpdate() {
@@ -159,11 +156,6 @@ public class SlotInventory implements Container {
         this.cachedModifiers.clear();
     }
 
-    /**
-     * Recalcula el tamano del inventario en base a los modificadores de atributo activos
-     * (ADD_VALUE, ADD_MULTIPLIED_BASE, ADD_MULTIPLIED_TOTAL), dropeando cualquier item que ya
-     * no entre si el tamano se reduce.
-     */
     public void recalculateSize() {
         if (this.dirtySize) {
             this.dirtySize = false;
@@ -208,16 +200,27 @@ public class SlotInventory implements Container {
             this.addPersistentModifier(persistentModifier);
         }
         this.recalculateSize();
+
+        int otherSize = other.getContainerSize();
+        int thisSize = this.getContainerSize();
+        LivingEntity entity = this.component.getEntity();
+        for (int i = 0; i < otherSize; i++) {
+            ItemStack stack = other.getItem(i).copy();
+            if (i < thisSize) {
+                this.setItem(i, stack);
+            } else if (!stack.isEmpty()) {
+                if (entity instanceof Player player) {
+                    player.getInventory().placeItemBackInInventory(stack);
+                } else if (entity.level() instanceof ServerLevel) {
+                    entity.spawnAtLocation(stack);
+                }
+            }
+        }
     }
 
-    /**
-     * Copia el contenido y los modificadores de todos los slots de una entidad a otra (ej: al
-     * respawnear con keepInventory activo). Debe ser invocado desde el hook de respawn de cada
-     * loader (ver Fase 2: Fabric usa ServerPlayerEvents.COPY_FROM, NeoForge usa PlayerEvent.Clone).
-     */
     public static void copyFrom(LivingEntity previous, LivingEntity current) {
-        dev.lukamadness.madnesscore.common.slots.SlotsApi.getSlotComponent(previous).ifPresent(prevSlots ->
-                dev.lukamadness.madnesscore.common.slots.SlotsApi.getSlotComponent(current).ifPresent(currentSlots -> {
+        SlotsApi.getSlotComponent(previous).ifPresent(prevSlots ->
+                SlotsApi.getSlotComponent(current).ifPresent(currentSlots -> {
                     Map<String, Map<String, SlotInventory>> prevMap = prevSlots.getInventory();
                     Map<String, Map<String, SlotInventory>> currentMap = currentSlots.getInventory();
                     for (Map.Entry<String, Map<String, SlotInventory>> entry : prevMap.entrySet()) {
@@ -235,14 +238,10 @@ public class SlotInventory implements Container {
     }
 
     public CompoundTag toTag() {
-        // Los modificadores "cacheados" (no persistentes) no se guardan a disco: se recalculan
-        // en el siguiente tick a partir de los items equipados. Solo persistimos los que fueron
-        // agregados explicitamente como permanentes (addPersistentModifier).
         return new CompoundTag();
     }
 
     public void fromTag(CompoundTag tag) {
-        // Ver comentario en toTag(): reservado para modificadores persistentes (Fase futura).
     }
 
     @Override

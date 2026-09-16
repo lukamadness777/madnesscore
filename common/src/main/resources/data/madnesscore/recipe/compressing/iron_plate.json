@@ -1,0 +1,12 @@
+{
+  "type": "madnesscore:compressing",
+  "ingredient": {
+    "item": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "madnesscore:iron_plate",
+    "count": 1
+  },
+  "processtime": 200,
+  "energy_per_tick": 20
+}

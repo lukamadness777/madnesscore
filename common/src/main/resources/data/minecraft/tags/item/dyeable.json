@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "madnesscore:dyeable_shirt",
+    "madnesscore:dyeable_jacket",
+    "madnesscore:dyeable_leggins",
+    "madnesscore:formal_suit_boots"
+  ]
+}

@@ -3,6 +3,7 @@ package dev.lukamadness.madnesscore.common.datagen;
 import dev.lukamadness.madnesscore.common.MadnessCoreCommon;
 import dev.lukamadness.madnesscore.common.registry.helper.RegistryHelper;
 import dev.lukamadness.madnesscore.common.registry.item.ModItems;
+import dev.lukamadness.madnesscore.common.registry.item.compat.ModDyeDepotItems;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -19,22 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-/**
- * Genera los item models (parent "item/generated", una sola capa) para todos los items
- * del mod que todavia no tienen modelo propio: los 16 fabrics, los nuggets, los plates
- * y los ingots.
- * <p>
- * Cada item define explicitamente la ruta de su textura porque las texturas NO estan
- * todas sueltas en textures/item/ (que es lo que asumiria el mapeo automatico), sino
- * organizadas en subcarpetas: textures/item/fabric/, textures/item/material/,
- * textures/item/material/nugget/ y textures/item/material/plate/.
- * <p>
- * Implementado a mano sobre ModelTemplates/TextureMapping (en vez de usar
- * net.minecraft.data.models.ItemModelGenerators) porque los metodos utiles de esa clase
- * son privados y no se pueden invocar desde fuera de su paquete.
- */
 public class ModItemModelProvider implements DataProvider {
-
     private final PackOutput.PathProvider modelPathProvider;
 
     public ModItemModelProvider(PackOutput output) {
@@ -69,7 +55,6 @@ public class ModItemModelProvider implements DataProvider {
     private static List<Entry> itemsNeedingModel() {
         List<Entry> items = new ArrayList<>();
 
-        // Fabrics -> textures/item/fabric/<color>_fabric.png
         items.add(new Entry(ModItems.WHITE_FABRIC, "fabric/white_fabric"));
         items.add(new Entry(ModItems.ORANGE_FABRIC, "fabric/orange_fabric"));
         items.add(new Entry(ModItems.MAGENTA_FABRIC, "fabric/magenta_fabric"));
@@ -87,18 +72,36 @@ public class ModItemModelProvider implements DataProvider {
         items.add(new Entry(ModItems.RED_FABRIC, "fabric/red_fabric"));
         items.add(new Entry(ModItems.BLACK_FABRIC, "fabric/black_fabric"));
 
-        // Bronze -> textures/item/material/...
+        items.add(new Entry(ModDyeDepotItems.MAROON_FABRIC, "fabric/dye_depot/maroon_fabric"));
+        items.add(new Entry(ModDyeDepotItems.ROSE_FABRIC, "fabric/dye_depot/rose_fabric"));
+        items.add(new Entry(ModDyeDepotItems.CORAL_FABRIC, "fabric/dye_depot/coral_fabric"));
+        items.add(new Entry(ModDyeDepotItems.GINGER_FABRIC, "fabric/dye_depot/ginger_fabric"));
+        items.add(new Entry(ModDyeDepotItems.TAN_FABRIC, "fabric/dye_depot/tan_fabric"));
+        items.add(new Entry(ModDyeDepotItems.BEIGE_FABRIC, "fabric/dye_depot/beige_fabric"));
+        items.add(new Entry(ModDyeDepotItems.AMBER_FABRIC, "fabric/dye_depot/amber_fabric"));
+        items.add(new Entry(ModDyeDepotItems.OLIVE_FABRIC, "fabric/dye_depot/olive_fabric"));
+        items.add(new Entry(ModDyeDepotItems.FOREST_FABRIC, "fabric/dye_depot/forest_fabric"));
+        items.add(new Entry(ModDyeDepotItems.VERDANT_FABRIC, "fabric/dye_depot/verdant_fabric"));
+        items.add(new Entry(ModDyeDepotItems.TEAL_FABRIC, "fabric/dye_depot/teal_fabric"));
+        items.add(new Entry(ModDyeDepotItems.MINT_FABRIC, "fabric/dye_depot/mint_fabric"));
+        items.add(new Entry(ModDyeDepotItems.AQUA_FABRIC, "fabric/dye_depot/aqua_fabric"));
+        items.add(new Entry(ModDyeDepotItems.SLATE_FABRIC, "fabric/dye_depot/slate_fabric"));
+        items.add(new Entry(ModDyeDepotItems.NAVY_FABRIC, "fabric/dye_depot/navy_fabric"));
+        items.add(new Entry(ModDyeDepotItems.INDIGO_FABRIC, "fabric/dye_depot/indigo_fabric"));
+
+        items.add(new Entry(ModItems.GOLD_PLATE, "material/plate/gold_plate"));
+
         items.add(new Entry(ModItems.BRONZE_INGOT, "material/bronze_ingot"));
         items.add(new Entry(ModItems.BRONZE_NUGGET, "material/nugget/bronze_nugget"));
         items.add(new Entry(ModItems.BRONZE_PLATE, "material/plate/bronze_plate"));
 
-        // Iron
         items.add(new Entry(ModItems.IRON_PLATE, "material/plate/iron_plate"));
 
-        // Steel
         items.add(new Entry(ModItems.STEEL_INGOT, "material/steel_ingot"));
         items.add(new Entry(ModItems.STEEL_NUGGET, "material/nugget/steel_nugget"));
         items.add(new Entry(ModItems.STEEL_PLATE, "material/plate/steel_plate"));
+
+        items.add(new Entry(ModItems.COPPER_PLATE, "material/plate/copper_plate"));
 
         return items;
     }

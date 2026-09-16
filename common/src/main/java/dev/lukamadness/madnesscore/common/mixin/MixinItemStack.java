@@ -1,8 +1,15 @@
 package dev.lukamadness.madnesscore.common.mixin;
 
 import com.google.common.collect.Multimap;
+import dev.lukamadness.madnesscore.common.content.tailoring.clothing.DyeableJacketItem;
+import dev.lukamadness.madnesscore.common.content.tailoring.clothing.DyeableLegginsItem;
+import dev.lukamadness.madnesscore.common.content.tailoring.clothing.DyeableShirtItem;
+import dev.lukamadness.madnesscore.common.content.tailoring.clothing.FormalColors;
+import dev.lukamadness.madnesscore.common.content.tailoring.clothing.FormalSuitBootsItem;
+import dev.lukamadness.madnesscore.common.content.tailoring.clothing.FormalSuitItem;
+import dev.lukamadness.madnesscore.common.registry.item.ModItems;
 import dev.lukamadness.madnesscore.common.slots.SlotEquipLogic;
-import dev.lukamadness.madnesscore.common.slots.SlotsApi;
+import dev.lukamadness.madnesscore.common.api.slots.SlotsApi;
 import dev.lukamadness.madnesscore.common.api.slots.SlotAttributes;
 import dev.lukamadness.madnesscore.common.api.slots.SlotInventory;
 import dev.lukamadness.madnesscore.common.api.slots.SlotReference;
@@ -10,6 +17,8 @@ import dev.lukamadness.madnesscore.common.api.slots.SlotType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -32,32 +41,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Agrega al tooltip de un item, si es equipable en algun slot dinamico del jugador que esta
- * mirando el tooltip, el texto "Equippable in..." y el desglose de que atributos aporta al
- * equiparlo (usa las claves de lang {@code madnesscore.tooltip.*}, ya presentes en en_us.json).
- * Portado de dev.emi.trinkets.mixin.ItemStackMixin, adaptado a 1.21.1: esta version de Minecraft
- * no tiene {@code TooltipDisplayComponent} (rework de tooltips posterior), asi que no hay ningun
- * "gate" adicional que consultar - el desglose de atributos se muestra siempre que haya
- * modificadores, igual que hacia Trinkets antes de ese rework.
- * <p>
- * Firma y ordinal verificados contra el jar fuente real de 1.21.1
- * ({@code ItemStack#getTooltipLines(Item.TooltipContext, @Nullable Player, TooltipFlag)}): el
- * cuerpo tiene exactamente dos "return" (uno temprano con {@code List.of()} si el tooltip esta
- * oculto, y el final con la lista armada), de ahi el {@code ordinal = 1} de abajo.
- */
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack {
-
     private static final DecimalFormat MADNESSCORE$DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     @Inject(method = "getTooltipLines", at = @At(value = "RETURN", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void madnesscore$onGetTooltipLines(Item.TooltipContext context, Player player, TooltipFlag flag,
                                                CallbackInfoReturnable<List<Component>> cir, List<Component> list) {
-        if (player == null || list == null) {
+        if (list == null) {
             return;
         }
         ItemStack self = (ItemStack) (Object) this;
+
+        madnesscore$addDyeStateTooltip(self, list);
+
+        if (player == null) {
+            return;
+        }
 
         SlotsApi.getSlotComponent(player).ifPresent(component -> {
             boolean canEquipAnywhere = true;
@@ -144,12 +144,50 @@ public abstract class MixinItemStack {
         });
     }
 
-    /**
-     * Formatea y agrega al tooltip cada modificador de atributo, con el mismo criterio que
-     * vainilla usa para el tooltip de armadura/armas (signo, factor x100 para modificadores
-     * multiplicativos, x10 extra para knockback resistance). Portado de
-     * dev.emi.trinkets.mixin.ItemStackMixin#addAttributes.
-     */
+    private void madnesscore$addDyeStateTooltip(ItemStack self, List<Component> list) {
+        Item item = self.getItem();
+
+        if (item == ModItems.FORMAL_SUIT.get()) {
+            FormalColors colors = FormalSuitItem.getColors(self);
+            list.add(Component.translatable("madnesscore.tooltip.formal_suit.shirt_color",
+                    madnesscore$hexComponent(colors.shirtColor())).withStyle(ChatFormatting.GRAY));
+            list.add(Component.translatable("madnesscore.tooltip.formal_suit.suit_color",
+                    madnesscore$hexComponent(colors.suitColor())).withStyle(ChatFormatting.GRAY));
+            list.add(Component.translatable("madnesscore.tooltip.formal_suit.tie_color",
+                    madnesscore$hexComponent(colors.tieColor())).withStyle(ChatFormatting.GRAY));
+            list.add(Component.translatable(colors.tieVisible()
+                            ? "madnesscore.tooltip.formal_suit.tie_shown"
+                            : "madnesscore.tooltip.formal_suit.tie_hidden")
+                    .withStyle(ChatFormatting.GRAY));
+            return;
+        }
+
+        Integer color = null;
+        if (item == ModItems.DYEABLE_SHIRT.get()) {
+            color = DyeableShirtItem.getColor(self);
+        } else if (item == ModItems.DYEABLE_JACKET.get()) {
+            color = DyeableJacketItem.getColor(self);
+        } else if (item == ModItems.DYEABLE_LEGGINS.get()) {
+            color = DyeableLegginsItem.getColor(self);
+        } else if (item == ModItems.FORMAL_SUIT_BOOTS.get()) {
+            color = FormalSuitBootsItem.getColor(self);
+        }
+
+        if (color != null) {
+            list.add(Component.translatable("madnesscore.tooltip.dye.color", madnesscore$hexComponent(color))
+                    .withStyle(ChatFormatting.GRAY));
+        }
+    }
+
+    private static String madnesscore$hex(int rgb) {
+        return String.format("#%06X", rgb & 0xFFFFFF);
+    }
+
+    private static Component madnesscore$hexComponent(int rgb) {
+        int clean = rgb & 0xFFFFFF;
+        return Component.literal(madnesscore$hex(clean)).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(clean)));
+    }
+
     private void madnesscore$addAttributes(List<Component> list, Multimap<Holder<Attribute>, AttributeModifier> map) {
         if (map.isEmpty()) {
             return;
@@ -184,8 +222,6 @@ public abstract class MixinItemStack {
         }
     }
 
-    // `equals` no compara a fondo (las AttributeModifier de distintos slots difieren en id) -
-    // portado de dev.emi.trinkets.mixin.ItemStackMixin#areMapsEqual.
     private boolean madnesscore$areMapsEqual(Multimap<Holder<Attribute>, AttributeModifier> map1, Multimap<Holder<Attribute>, AttributeModifier> map2) {
         if (map1.size() != map2.size()) {
             return false;

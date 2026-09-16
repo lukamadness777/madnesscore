@@ -1,0 +1,30 @@
+{
+  "type": "madnesscore:alloy_smelting",
+  "inputs": [
+    {
+      "ingredient": { "item": "minecraft:iron_ingot" },
+      "count": 3
+    },
+    {
+      "ingredient": { "tag": "minecraft:coals" },
+      "count": 1
+    }
+  ],
+  "outputs": [
+    { "id": "alloyed:steel_ingot", "count": 3 }
+  ],
+  "processtime": 240,
+  "heat_per_tick": 50,
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": ["alloyed"]
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "alloyed"
+    }
+  ]
+}

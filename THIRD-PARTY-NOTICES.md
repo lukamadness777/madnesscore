@@ -102,4 +102,3 @@ The full PolyForm Shield License 1.0.0 text is reproduced in
 [LICENSE.md](LICENSE.md) (Madness Core's own license is also based on this
 license, but that does not mean this Sodium-derived code is covered by
 Madness Core's copyright — it remains CaffeineMC's).
-

@@ -12,15 +12,6 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-/**
- * Representa un sub-grupo ("carpeta") de items dentro de un
- * {@link net.minecraft.world.item.CreativeModeTab}. Puramente de datos: no
- * depende de ningún widget, así que vive en {@code common} y es igual en
- * Fabric/NeoForge.
- * <p>
- * Se agrega a un {@link net.minecraft.world.item.CreativeModeTab} vía
- * {@link BundledTabsAPI#addTab(Supplier, BundledTab)}.
- */
 public class BundledTab {
     private final Component tooltip;
     private final ItemStack icon;

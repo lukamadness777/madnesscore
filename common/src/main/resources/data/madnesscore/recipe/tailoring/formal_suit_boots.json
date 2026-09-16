@@ -1,0 +1,11 @@
+{
+  "type": "madnesscore:tailoring",
+  "ingredients": [
+    { "ingredient": { "item": "madnesscore:gray_fabric" }, "count": 1 },
+    { "optional_color": true, "count": 1 }
+  ],
+  "output": {
+    "id": "madnesscore:formal_suit_boots",
+    "count": 1
+  }
+}

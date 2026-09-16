@@ -16,18 +16,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Adjunta el {@link LivingEntitySlotComponent} a toda {@link LivingEntity} (campo plano, sin
- * Cardinal Components), y conecta el tick, la muerte y la persistencia NBT con la logica common
- * compartida ({@link SlotTicker}, {@link SlotDeathHandler}). Equivalente Fabric del Data
- * Attachment de NeoForge (ver {@code NeoForgeSlotAttachment}).
- * <p>
- * Portado de dev.emi.trinkets.mixin.LivingEntityMixin (sin la parte de red, que queda para la
- * Fase 4).
- */
 @Mixin(LivingEntity.class)
 public abstract class MixinLivingEntitySlots implements SlotComponentHolder {
-
     @Unique
     private static final String MADNESSCORE$NBT_KEY = MadnessCoreCommon.MOD_ID + ":slots";
 
@@ -52,12 +42,11 @@ public abstract class MixinLivingEntitySlots implements SlotComponentHolder {
         SlotTicker.tick((LivingEntity) (Object) this);
     }
 
-    @Inject(method = "die", at = @At("TAIL"))
-    private void madnesscore$dropSlotsOnDeath(DamageSource damageSource, CallbackInfo ci) {
+    @Inject(method = "dropAllDeathLoot", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/entity/LivingEntity;dropEquipment()V"))
+    private void madnesscore$dropSlotsOnDeath(ServerLevel level, DamageSource damageSource, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if (self.level() instanceof ServerLevel serverLevel) {
-            SlotDeathHandler.dropOnDeath(self, serverLevel);
-        }
+        SlotDeathHandler.dropOnDeath(self, level);
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))

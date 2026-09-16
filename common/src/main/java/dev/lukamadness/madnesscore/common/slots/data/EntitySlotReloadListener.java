@@ -30,23 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Reload listener (datapack, carpeta "data/&lt;namespace&gt;/slot_assignments/*.json") que asigna
- * grupos/slots definidos por {@link SlotGroupReloadListener} a tipos de entidad concretos, o a
- * tags de tipo de entidad (prefijo "#").
- * <p>
- * Formato del JSON:
- * <pre>
- * {
- *   "replace": false,
- *   "entities": ["minecraft:player", "#minecraft:raiders"],
- *   "slots": ["hand/ring", "chest/necklace"]
- * }
- * </pre>
- * Portado de dev.emi.trinkets.data.EntitySlotLoader.
- */
 public class EntitySlotReloadListener extends SimplePreparableReloadListener<Map<String, Map<String, Set<String>>>> {
-
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(MadnessCoreCommon.MOD_ID, "slot_assignments");
     private static final String DATA_TYPE = "slot_assignments";
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
@@ -60,7 +44,6 @@ public class EntitySlotReloadListener extends SimplePreparableReloadListener<Map
 
     @Override
     protected Map<String, Map<String, Set<String>>> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
-        // entityId (o "#tagId") -> groupName -> nombres de slot asignados
         Map<String, Map<String, Set<String>>> map = new HashMap<>();
 
         Map<ResourceLocation, Resource> topResources = resourceManager.listResources(DATA_TYPE, id -> id.getPath().endsWith(".json"));
@@ -70,7 +53,6 @@ public class EntitySlotReloadListener extends SimplePreparableReloadListener<Map
             try {
                 stack = resourceManager.getResourceStack(identifier);
             } catch (Exception e) {
-                MadnessCoreCommon.LOG.error("[madnesscore] No se pudo obtener el stack de recursos para {}", identifier, e);
                 continue;
             }
 
@@ -95,7 +77,6 @@ public class EntitySlotReloadListener extends SimplePreparableReloadListener<Map
                             String[] parsedSlot = slot.split("/");
 
                             if (parsedSlot.length != 2) {
-                                MadnessCoreCommon.LOG.error("[madnesscore] Asignacion de slot malformada '{}', debe tener el formato 'grupo/slot'", slot);
                                 continue;
                             }
                             groups.computeIfAbsent(parsedSlot[0], k -> new HashSet<>()).add(parsedSlot[1]);
@@ -117,12 +98,10 @@ public class EntitySlotReloadListener extends SimplePreparableReloadListener<Map
                                 groups.forEach((groupName, slotNames) -> slots.computeIfAbsent(groupName, k -> new HashSet<>()).addAll(slotNames));
                             }
                         }
-                    } catch (JsonSyntaxException e) {
-                        MadnessCoreCommon.LOG.error("[madnesscore] Error de sintaxis leyendo {}", identifier.getPath(), e);
+                    } catch (JsonSyntaxException ignored) {
                     }
                 }
-            } catch (IOException e) {
-                MadnessCoreCommon.LOG.error("[madnesscore] Error de IO leyendo asignaciones de slots para {}", identifier, e);
+            } catch (IOException ignored) {
             }
         }
         return map;
@@ -142,7 +121,6 @@ public class EntitySlotReloadListener extends SimplePreparableReloadListener<Map
                     SlotGroupReloadListener.GroupData group = groupData.get(groupName);
 
                     if (group == null) {
-                        MadnessCoreCommon.LOG.error("[madnesscore] Se intento asignar slots del grupo desconocido '{}'", groupName);
                         return;
                     }
 
@@ -153,8 +131,6 @@ public class EntitySlotReloadListener extends SimplePreparableReloadListener<Map
                         SlotGroupReloadListener.SlotData slotData = group.getSlot(slotName);
                         if (slotData != null) {
                             builder.addSlot(slotName, slotData.create(groupName, slotName));
-                        } else {
-                            MadnessCoreCommon.LOG.error("[madnesscore] Se intento asignar el slot desconocido '{}/{}'", groupName, slotName);
                         }
                     });
                 });
@@ -176,17 +152,16 @@ public class EntitySlotReloadListener extends SimplePreparableReloadListener<Map
                 TagKey<EntityType<?>> tag = TagKey.create(Registries.ENTITY_TYPE, tagId);
                 BuiltInRegistries.ENTITY_TYPE.getTag(tag).ifPresentOrElse(
                         holderSet -> holderSet.forEach(holder -> types.add(holder.value())),
-                        () -> MadnessCoreCommon.LOG.error("[madnesscore] Tag de entidad desconocido '{}'", entityKey)
+                        () -> MadnessCoreCommon.LOG.error("[madnesscore] Unknown entity Tag '{}'", entityKey)
                 );
             } else {
                 ResourceLocation id = ResourceLocation.parse(entityKey);
                 BuiltInRegistries.ENTITY_TYPE.getOptional(id).ifPresentOrElse(
                         types::add,
-                        () -> MadnessCoreCommon.LOG.error("[madnesscore] Entidad desconocida '{}'", entityKey)
+                        () -> MadnessCoreCommon.LOG.error("[madnesscore] Unknown Entity '{}'", entityKey)
                 );
             }
-        } catch (Exception e) {
-            MadnessCoreCommon.LOG.error("[madnesscore] Se intento asignar una entrada de entidad invalida '{}'", entityKey, e);
+        } catch (Exception ignored) {
         }
         return types;
     }
@@ -200,10 +175,6 @@ public class EntitySlotReloadListener extends SimplePreparableReloadListener<Map
         return ImmutableMap.copyOf(this.entitySlots);
     }
 
-    /**
-     * Usado por el sync de red (Fase 4) para reemplazar por completo los datos, por ejemplo al
-     * recibir el paquete del servidor en el cliente.
-     */
     public void setEntitySlots(Map<EntityType<?>, Map<String, SlotGroup>> slots) {
         this.entitySlots.clear();
         this.entitySlots.putAll(slots);

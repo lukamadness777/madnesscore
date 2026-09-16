@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "madnesscore:block/tailoring_table" },
+    "facing=south": { "model": "madnesscore:block/tailoring_table", "y": 180 },
+    "facing=east":  { "model": "madnesscore:block/tailoring_table", "y": 90 },
+    "facing=west":  { "model": "madnesscore:block/tailoring_table", "y": 270 }
+  }
+}

@@ -2,7 +2,7 @@ package dev.lukamadness.madnesscore.common.slots.network;
 
 import dev.lukamadness.madnesscore.common.api.slots.*;
 import dev.lukamadness.madnesscore.common.platform.Services;
-import dev.lukamadness.madnesscore.common.slots.SlotsApi;
+import dev.lukamadness.madnesscore.common.api.slots.SlotsApi;
 import dev.lukamadness.madnesscore.common.api.slots.SlotType;
 import dev.lukamadness.madnesscore.common.slots.gui.PlayerSlotMenu;
 import net.minecraft.world.item.ItemStack;
@@ -26,22 +26,10 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Logica de red compartida (Fase 4) entre Fabric y NeoForge. Los payloads viven en este mismo
- * paquete y son vanilla puro; esta clase arma/aplica su contenido y queda 100% en common. Cada
- * loader solo aporta el registro del canal y el envio real (ver {@code ISlotNetwork}).
- */
 public final class SlotNetworking {
-
     private SlotNetworking() {
     }
 
-    /**
-     * Construye y envia el estado completo de los slots de una entidad a todos los que la estan
-     * trackeando (y a si misma si es un {@link ServerPlayer}). Se llama desde
-     * {@link dev.lukamadness.madnesscore.common.slots.SlotTicker} cuando detecta un cambio de
-     * equipo en un tick de servidor.
-     */
     public static void syncToTrackers(LivingEntity entity) {
         if (!(entity.level() instanceof ServerLevel)) {
             return;
@@ -52,10 +40,6 @@ public final class SlotNetworking {
         }
     }
 
-    /**
-     * Envia el estado completo de los slots de {@code entity} a un unico observador (ej: cuando
-     * un jugador empieza a trackearla, o al loguearse para verse a si mismo/a otros ya visibles).
-     */
     public static void sendFullSyncTo(LivingEntity entity, ServerPlayer viewer) {
         SyncSlotComponentPayload payload = buildPayload(entity);
         if (payload != null) {
@@ -68,61 +52,35 @@ public final class SlotNetworking {
         if (component == null) {
             return null;
         }
+        component.getInventory().forEach((groupName, types) -> types.forEach((typeName, inv) -> {
+            for (int i = 0; i < inv.getContainerSize(); i++) {
+                SlotType.class.getSimpleName();
+            }
+        }));
         CompoundTag tag = new CompoundTag();
         component.writeToNbt(tag, entity.level().registryAccess());
         return new SyncSlotComponentPayload(entity.getId(), tag);
     }
 
-    /**
-     * Aplica en el cliente un paquete de sincronizacion recibido: busca la entidad por id en el
-     * nivel actual y vuelca el NBT recibido en su {@code SlotComponent}. Debe llamarse ya en el
-     * hilo principal del cliente (encolar con {@code execute}/{@code enqueueWork} segun el
-     * loader antes de invocar esto).
-     */
     public static void handleSyncOnClient(SyncSlotComponentPayload payload, Level clientLevel) {
         if (clientLevel == null) {
             return;
         }
         Entity entity = clientLevel.getEntity(payload.entityId());
         if (entity instanceof LivingEntity livingEntity) {
-            SlotsApi.getSlotComponent(livingEntity).ifPresent(component -> {
+            SlotsApi.getSlotComponent(livingEntity).ifPresentOrElse(component -> {
                 component.readFromNbt(payload.data(), clientLevel.registryAccess());
 
-                // Sin esto, el InventoryMenu del cliente nunca se entera de que cambiaron los
-                // grupos/slots: el UNICO rebuild que corre solo (sin este llamado) es el que
-                // dispara SlotNetworking#handleDefinitionsSyncOnClient cuando llegan las
-                // DEFINICIONES; este sync de aca es el de EQUIPO (que items tiene puestos la
-                // entidad), que puede cambiar en cualquier momento sin que cambien las
-                // definiciones. Sin este llamado madnesscore$groupPos queda desactualizado y
-                // SlotHoverManager nunca encuentra nada bajo el mouse. Portado de
-                // TrinketsClient#onInitializeClient (screenHandler.trinkets$updateTrinketSlots).
-                //
-                // OJO: el parametro va en FALSE, no true. El NBT recien aplicado por readFromNbt
-                // (arriba) ya es la fuente de verdad para tamanos/contenido; pasar true haria que
-                // madnesscore$updateSlots llame a component.update() de nuevo, que reconstruye el
-                // inventario en base a los datos LOCALES de SlotsApi (tamanos por defecto, sin los
-                // modificadores de atributo que trajo el sync) y pisaria lo que se acaba de leer.
-                // Asi es exactamente como lo hace Trinkets (ver PlayerScreenHandlerMixin, llamado
-                // con slotsChanged=false desde TrinketsClient tras aplicar el sync).
                 if (entity instanceof Player player
                         && player.inventoryMenu instanceof PlayerSlotMenu menu) {
                     menu.madnesscore$updateSlots(false);
                 }
-            });
+            }, () -> dev.lukamadness.madnesscore.common.MadnessCoreCommon.LOG.info(
+                    "[slots-debug] handleSyncOnClient WITHOUT COMPONENT in client for entityId={}",
+                    payload.entityId()));
         }
     }
 
-    // ---------------------------------------------------------------------------------------
-    // Rotura de item equipado (Slottable#onBreak) - ver SlotBreakPayload
-    // ---------------------------------------------------------------------------------------
-
-    /**
-     * Notifica a todos los que trackean la entidad (y a ella misma si es un jugador) que el item
-     * equipado en {@code ref} acaba de romperse, para que reproduzcan el efecto en cliente.
-     * Portado de {@code TrinketsApi#onTrinketBroken}. Llamar SOLO del lado servidor (ej. desde el
-     * callback que le pasa un mod-item propio a {@code ItemStack#hurtAndBreak}, o desde cualquier
-     * otro punto que detecte que un stack equipado llego a 0 de durabilidad).
-     */
     public static void sendBreak(LivingEntity entity, SlotReference ref) {
         if (!(entity.level() instanceof ServerLevel)) {
             return;
@@ -132,12 +90,6 @@ public final class SlotNetworking {
         Services.SLOT_NETWORK.sendToTrackingAndSelf(entity, payload);
     }
 
-    /**
-     * Aplica en el cliente un paquete de rotura recibido: busca la entidad, el slot referenciado
-     * y el stack que tiene puesto ahora mismo, y le delega el efecto (sonido/particulas) al
-     * {@link Slottable#onBreak} registrado para ese
-     * item. Debe llamarse ya en el hilo principal del cliente.
-     */
     public static void handleBreakOnClient(SlotBreakPayload payload, Level clientLevel) {
         if (clientLevel == null) {
             return;
@@ -164,16 +116,6 @@ public final class SlotNetworking {
         });
     }
 
-    // ---------------------------------------------------------------------------------------
-    // Definiciones de slots (grupos/SlotType por tipo de entidad) - ver SyncSlotDefinitionsPayload
-    // ---------------------------------------------------------------------------------------
-
-    /**
-     * Arma el paquete con TODAS las definiciones de slots resueltas actualmente en el servidor
-     * ({@code SlotsApi.getServerEntityLoader()}). Se llama al loguearse un jugador y en cada
-     * {@code /reload} (ver hooks en cada loader), nunca por-tick, asi que no hace falta filtrar
-     * por lo que el jugador puede llegar a ver.
-     */
     public static SyncSlotDefinitionsPayload buildDefinitionsPayload() {
         Map<EntityType<?>, Map<String, SlotGroup>> all = SlotsApi.getServerEntityLoader().getAllEntitySlots();
         CompoundTag entitiesTag = new CompoundTag();
@@ -188,15 +130,6 @@ public final class SlotNetworking {
         return new SyncSlotDefinitionsPayload(root);
     }
 
-    /**
-     * Aplica en el cliente un paquete de definiciones recibido, reemplazando por completo el
-     * contenido de {@code SlotsApi.getClientEntityLoader()}. Debe llamarse en el hilo principal
-     * del cliente.
-     * <p>
-     * {@code localPlayer} es el jugador local (si ya existe en este momento), pasado por cada
-     * loader desde su receiver S2C. Hace falta para forzar un rebuild del {@code InventoryMenu}
-     * de ESE jugador ahora mismo: ver el bloque de abajo para el porque.
-     */
     public static void handleDefinitionsSyncOnClient(SyncSlotDefinitionsPayload payload, @Nullable Player localPlayer) {
         Map<EntityType<?>, Map<String, SlotGroup>> parsed = new HashMap<>();
         CompoundTag entitiesTag = payload.data().getCompound("Entities");
@@ -214,22 +147,6 @@ public final class SlotNetworking {
         }
         SlotsApi.getClientEntityLoader().setEntitySlots(parsed);
 
-        // Sin esto, el InventoryMenu local del jugador -ya construido, en el ctor de
-        // InventoryMenu, ANTES de que estas definiciones llegaran por red- se queda para
-        // siempre con cero slots dinamicos: MixinInventoryMenu#madnesscore$init corre en el
-        // cliente con SlotsApi.getClientEntityLoader() todavia vacio, asi que
-        // component.getGroups() no encuentra nada. El servidor, en cambio, ya tenia sus datos
-        // cargados desde el arranque, asi que su copia de InventoryMenu SI tiene los slots
-        // dinamicos desde el vamos (server vs cliente = distinta cantidad de slots para el MISMO
-        // containerId 0). El proximo ClientboundContainerSetContentPacket que le llegue al
-        // cliente (el inicial de login, o el reenvio explicito que hace cada loader justo
-        // despues de este mismo paquete, ver SlotEventListener#onDatapackSync /
-        // MadnessCore#registerSlotDataSync) va a traer mas indices de los que this.slots tiene
-        // ahora mismo -> IndexOutOfBoundsException en AbstractContainerMenu#getSlot ->
-        // "Network Protocol Error" -> el cliente se desconecta ("Too many suspicious packets").
-        // Portado del mismo problema que Trinkets evita al no compartir InventoryMenu (ver
-        // TrinketPlayerScreenHandler): al agregar los slots directamente sobre el menu de
-        // toda la vida, hace falta este rebuild explicito apenas se sabe la forma real.
         if (localPlayer != null && localPlayer.inventoryMenu instanceof PlayerSlotMenu menu) {
             menu.madnesscore$updateSlots(true);
         }

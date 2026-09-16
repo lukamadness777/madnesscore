@@ -1,36 +1,34 @@
 package dev.lukamadness.madnesscore.common.registry.blockentity;
 
 import dev.lukamadness.madnesscore.common.registry.block.ModBlocks;
-import dev.lukamadness.madnesscore.common.registry.helper.RegistryHelper;
 import dev.lukamadness.madnesscore.common.content.technology.blocks.AlloySmelteryBlockEntity;
+import dev.lukamadness.madnesscore.common.content.technology.blocks.CompressorBlockEntity;
 import dev.lukamadness.madnesscore.common.content.technology.blocks.EnergyConverterBlockEntity;
 import dev.lukamadness.madnesscore.common.content.technology.blocks.HeatGeneratorBlockEntity;
+import dev.lukamadness.madnesscore.common.content.tailoring.blocks.TailoringTableBlockEntity;
+import dev.lukamadness.madnesscore.common.registry.helper.RegistryHelperLoader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.function.Supplier;
 
-/**
- * Registro multiplataforma de BlockEntityType.
- * <p>
- * Ejemplo de uso:
- * <pre>{@code
- * public static final Supplier<BlockEntityType<ExampleBlockEntity>> EXAMPLE_BE = register(
- *         "example_block_entity",
- *         ExampleBlockEntity::new,
- *         () -> new Block[]{ ModBlocks.EXAMPLE_BLOCK.get() }
- * );
- * }</pre>
- */
 public class ModBlockEntities {
-
-    private static <T extends BlockEntity> Supplier<BlockEntityType<T>> register(
+    public static <T extends BlockEntity> Supplier<BlockEntityType<T>> register(
             String id,
             BlockEntityFactory<T> factory,
             Supplier<Block[]> validBlocks
     ) {
-        return RegistryHelper.INSTANCE.registerBlockEntity(id, factory, validBlocks);
+        return RegistryHelperLoader.INSTANCE.registerBlockEntity(id, factory, validBlocks);
+    }
+
+    public static <T extends BlockEntity> Supplier<BlockEntityType<T>> register(
+            String namespace,
+            String id,
+            BlockEntityFactory<T> factory,
+            Supplier<Block[]> validBlocks
+    ) {
+        return RegistryHelperLoader.INSTANCE.registerBlockEntity(namespace, id, factory, validBlocks);
     }
 
     public static final Supplier<BlockEntityType<HeatGeneratorBlockEntity>> HEAT_GENERATOR = register(
@@ -51,7 +49,18 @@ public class ModBlockEntities {
             () -> new Block[]{ ModBlocks.ENERGY_CONVERTER.get() }
     );
 
+    public static final Supplier<BlockEntityType<CompressorBlockEntity>> COMPRESSOR = register(
+            "compressor",
+            CompressorBlockEntity::new,
+            () -> new Block[]{ ModBlocks.COMPRESSOR.get() }
+    );
+
+    public static final Supplier<BlockEntityType<TailoringTableBlockEntity>> TAILORING_TABLE = register(
+            "tailoring_table",
+            TailoringTableBlockEntity::new,
+            () -> new Block[]{ ModBlocks.TAILORING_TABLE.get() }
+    );
+
     public static void init() {
-        // Fuerza la carga de la clase para que los Supplier de arriba se ejecuten
     }
 }

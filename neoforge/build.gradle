@@ -11,11 +11,31 @@ sourceSets {
     }
 }
 
+dependencies {
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+
+    compileOnly "maven.modrinth:1W98a849:S2Ln2tIn"
+    runtimeOnly "maven.modrinth:1W98a849:S2Ln2tIn"
+
+    compileOnly "maven.modrinth:nvQzSEkH:eYz2YBGT"
+    runtimeOnly "maven.modrinth:nvQzSEkH:eYz2YBGT"
+
+    compileOnly "xaero.map:xaeroworldmap-neoforge-${minecraft_version}:${xaeroworldmap_version}"
+    compileOnly "xaero.minimap:xaerominimap-neoforge-${minecraft_version}:${xaerominimap_version}"
+    compileOnly "info.journeymap:journeymap-api-neoforge:${journeymap_api_version}-${minecraft_version}"
+
+    runtimeOnly "xaero.minimap:xaerominimap-neoforge-${minecraft_version}:${xaerominimap_version}"
+    runtimeOnly "xaero.map:xaeroworldmap-neoforge-${minecraft_version}:${xaeroworldmap_version}"
+
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+}
+
 neoForge {
     version = neoforge_version
     def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
-        accessTransformers.add(at.absolutePath)
+        accessTransformers.files.from(at)
     }
     parchment {
         minecraftVersion = parchment_minecraft

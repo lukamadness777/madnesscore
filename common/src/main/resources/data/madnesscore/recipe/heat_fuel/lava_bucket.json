@@ -1,0 +1,6 @@
+{
+  "type": "madnesscore:heat_fuel",
+  "item": { "item": "minecraft:lava_bucket" },
+  "temperature": 1000,
+  "burn_time": 20000
+}

@@ -5,14 +5,6 @@ import dev.lukamadness.madnesscore.fabric.registry.fluid.FabricFluidRegistryHelp
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 
-/**
- * Registra el FluidRenderHandler (texturas + tinte) para todos los fluidos
- * registrados via FluidRegistryHelper.INSTANCE.registerFluid(...) en Fabric.
- * <p>
- * Llamar a {@link #register()} desde el ClientModInitializer de Fabric
- * (dev.lukamadness.madnesscore.fabric.client.MadnessCoreFabric#onInitializeClient),
- * despues de que MadnessCoreCommon.init() ya corrio.
- */
 public final class FabricFluidRenderRegistrar {
     private FabricFluidRenderRegistrar() {
     }

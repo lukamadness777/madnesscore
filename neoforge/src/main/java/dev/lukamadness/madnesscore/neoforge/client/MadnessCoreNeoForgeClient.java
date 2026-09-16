@@ -2,12 +2,18 @@ package dev.lukamadness.madnesscore.neoforge.client;
 
 import dev.lukamadness.madnesscore.common.MadnessCoreCommon;
 import dev.lukamadness.madnesscore.common.client.MadnessCoreCommonClient;
+import dev.lukamadness.madnesscore.common.client.item.color.ModItemColors;
+import dev.lukamadness.madnesscore.common.client.screen.MadnessCoreScreenButtons;
+import dev.lukamadness.madnesscore.common.network.UpdateDimensionsPacket;
 import dev.lukamadness.madnesscore.common.registry.fluid.ModFluidProperties;
+import dev.lukamadness.madnesscore.neoforge.client.dimension.ClientPacketHandlers;
 import dev.lukamadness.madnesscore.neoforge.registry.fluid.NeoForgeFluidRegistryHelper;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -22,11 +28,19 @@ public final class MadnessCoreNeoForgeClient {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         MadnessCoreCommonClient.init();
+        MadnessCoreCommonClient.finalizeConfig();
     }
 
-    // Registra las texturas/tinte de cada fluido custom (equivalente al
-    // FluidRenderHandlerRegistry de Fabric). Corre en el mod event bus, no
-    // hace falta que este dentro de FMLClientSetupEvent.
+    @SubscribeEvent
+    public static void onScreenInit(ScreenEvent.Init.Post event) {
+        MadnessCoreScreenButtons.onScreenInit(event.getScreen(), event::addListener);
+    }
+
+    @SubscribeEvent
+    public static void onRegisterItemColors(RegisterColorHandlersEvent.Item event) {
+        ModItemColors.registerAll(event::register);
+    }
+
     @SubscribeEvent
     public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
         Map<String, ModFluidProperties> pending = NeoForgeFluidRegistryHelper.getPendingClientExtensions();

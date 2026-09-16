@@ -13,13 +13,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-/**
- * Registra el {@link AttachmentType} que adjunta {@link LivingEntitySlotComponent} a cada
- * {@link LivingEntity} en NeoForge (equivalente al mixin + campo plano usado en Fabric). NeoForge
- * persiste automaticamente el attachment junto con la entidad usando {@link #SERIALIZER}.
- */
 public final class SlotAttachments {
-
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MadnessCoreCommon.MOD_ID);
 
@@ -49,7 +43,6 @@ public final class SlotAttachments {
     private SlotAttachments() {
     }
 
-    // Se llama UNA vez desde MadnessCoreNeoForge(IEventBus), igual que NeoForgeRegistryHelper.registerToBus
     public static void registerToBus(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

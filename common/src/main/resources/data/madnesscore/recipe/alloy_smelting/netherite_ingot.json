@@ -1,0 +1,18 @@
+{
+  "type": "madnesscore:alloy_smelting",
+  "inputs": [
+    {
+      "ingredient": { "item": "minecraft:netherite_scrap" },
+      "count": 2
+    },
+    {
+      "ingredient": { "item": "minecraft:gold_ingot" },
+      "count": 5
+    }
+  ],
+  "outputs": [
+    { "id": "minecraft:netherite_ingot", "count": 1 }
+  ],
+  "processtime": 400,
+  "heat_per_tick": 90
+}

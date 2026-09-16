@@ -2,6 +2,7 @@ plugins {
     id 'multiloader-loader'
     id 'fabric-loom'
 }
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered {
@@ -10,10 +11,20 @@ dependencies {
     }
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
 
-    // Dye Depot
-    modCompileOnly "com.ninni.dye_depot:dye_depot-fabric:1.21.1-2.1.1"
-    modLocalRuntime "com.ninni.dye_depot:dye_depot-fabric:1.21.1-2.1.1"
+    modCompileOnly "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
+    modCompileOnly "xaero.map:xaeroworldmap-fabric-${minecraft_version}:${xaeroworldmap_version}"
+    modCompileOnly "xaero.minimap:xaerominimap-fabric-${minecraft_version}:${xaerominimap_version}"
+    modCompileOnly "info.journeymap:journeymap-api-fabric:${journeymap_api_version}-${minecraft_version}"
+    modCompileOnly "maven.modrinth:nvQzSEkH:adpNvTZS"
+
+    modLocalRuntime "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
+    modLocalRuntime "mysticdrew:common-networking-fabric:${commonnetworking_version}-${minecraft_version}"
+    modLocalRuntime "info.journeymap:journeymap-api-fabric:${journeymap_api_version}-${minecraft_version}"
+    modLocalRuntime "maven.modrinth:nvQzSEkH:adpNvTZS"
+    modLocalRuntime "maven.modrinth:lfHFW1mp:qmuZAgdA"
+    modCompileOnly "maven.modrinth:1W98a849:eUYBilCG"
 }
 
 loom {

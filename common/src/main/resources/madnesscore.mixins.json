@@ -6,9 +6,22 @@
   "compatibilityLevel": "JAVA_18",
   "mixins": [
     "MixinInventoryMenu",
+    "MixinInventoryClear",
     "MixinItemStack",
     "MixinLivingEntityEquipmentMirror",
-    "accessor.ContainerMenuAccessor"
+    "MixinEnchantmentHelperSlots",
+    "accessor.ContainerMenuAccessor",
+    "MixinServerGamePacketListenerImpl",
+    "MixinInventoryClearCommand",
+    "MixinArmorSlot",
+    "datafixer.MixinV1460",
+    "accessor.MinecraftServerAccessor",
+    "accessor.LayeredRegistryAccessAccessor",
+    "accessor.ImmutableRegistryAccessAccessor",
+    "accessor.WorldBorderAccessor",
+    "accessor.DelegateBorderChangeListenerAccessor",
+    "accessor.MappedRegistryAccessor",
+    "accessor.EnchantmentInSlotVisitorAccessor"
   ],
   "server": [],
   "injectors": {

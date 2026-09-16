@@ -31,16 +31,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
 
-/**
- * Recreación del antiguo CoalGeneratorBlock. Mismo comportamiento y forma,
- * pero genera y transmite Heat (no Energy) a los vecinos que puedan recibirlo.
- */
 public class HeatGeneratorBlock extends BaseEntityBlock {
-
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    // Shape base tomada del modelo de Blockbench (heat_generator.json), asumiendo FACING = NORTH.
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             Block.box(1, 0, 0, 15, 1, 8),
             Block.box(1, 1, 0, 15, 4, 1),
@@ -71,10 +65,6 @@ public class HeatGeneratorBlock extends BaseEntityBlock {
         SHAPES_BY_FACING.put(Direction.WEST, rotateShape(Direction.NORTH, Direction.WEST, SHAPE_NORTH));
     }
 
-    /**
-     * Rota una VoxelShape en el eje Y de una Direction horizontal a otra,
-     * girando alrededor del centro del bloque.
-     */
     private static VoxelShape rotateShape(Direction from, Direction to, VoxelShape shape) {
         VoxelShape[] buffer = new VoxelShape[]{shape, Shapes.empty()};
         int times = (to.get2DDataValue() - from.get2DDataValue() + 4) % 4;
@@ -149,7 +139,7 @@ public class HeatGeneratorBlock extends BaseEntityBlock {
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (state.getBlock() != newState.getBlock()) {
             if (level.getBlockEntity(pos) instanceof HeatGeneratorBlockEntity be) {
-                Containers.dropContents(level, pos, be); // requires be to implement Container
+                Containers.dropContents(level, pos, be);
                 level.updateNeighbourForOutputSignal(pos, this);
             }
         }

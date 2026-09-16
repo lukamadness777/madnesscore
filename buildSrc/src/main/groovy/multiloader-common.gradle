@@ -15,7 +15,6 @@ java {
 
 repositories {
     mavenCentral()
-    // https://docs.gradle.org/current/userguide/declaring_repositories.html#declaring_content_exclusively_found_in_one_repository
     exclusiveContent {
         forRepository {
             maven {
@@ -77,27 +76,42 @@ jar {
     }
 }
 
-processResources {
-    var expandProps = ['version'                      : version,
-                       'group'                        : project.group, //Else we target the task's group.
-                       'minecraft_version'            : minecraft_version,
-                       'minecraft_version_range'      : minecraft_version_range,
-                       'fabric_version'               : fabric_version,
-                       'fabric_loader_version'        : fabric_loader_version,
-                       'mod_name'                     : mod_name,
-                       'mod_author'                   : mod_author,
-                       'mod_id'                       : mod_id,
-                       'license'                      : license,
-                       'description'                  : project.description,
-                       'neoforge_version'             : neoforge_version,
-                       'neoforge_loader_version_range': neoforge_loader_version_range,
-                       'credits'                      : credits,
-                       'java_version'                 : java_version]
+ext.modResourceExpandProps = ['version'                      : version,
+                              'group'                        : project.group, //Else we target the task's group.
+                              'minecraft_version'            : minecraft_version,
+                              'minecraft_version_range'      : minecraft_version_range,
+                              'fabric_version'               : fabric_version,
+                              'fabric_loader_version'        : fabric_loader_version,
+                              'mod_name'                     : mod_name,
+                              'mod_author'                   : mod_author,
+                              'mod_id'                       : mod_id,
+                              'license'                      : license,
+                              'description'                  : project.description,
+                              'neoforge_version'             : neoforge_version,
+                              'neoforge_loader_version_range': neoforge_loader_version_range,
+                              'credits'                      : credits,
+                              'java_version'                 : java_version]
 
-    filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
-        expand expandProps
+def configureModResourceExpansion = { task ->
+    task.filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
+        expand ext.modResourceExpandProps
     }
-    inputs.properties(expandProps)
+    task.inputs.properties(ext.modResourceExpandProps)
+}
+
+processResources {
+    configureModResourceExpansion(it)
+}
+
+// splitEnvironmentSourceSets() (Fabric Loom) y los sourceSets 'client' que declaramos a mano en
+// common/build.gradle generan su propio task 'processClientResources', separado de
+// 'processResources'. Ese task NO hereda la config de arriba, asi que sin esto los
+// *.client.mixins.json se quedan con el placeholder "${mod_id}.refmap.json" literal sin
+// resolver (referencia rota, aunque en dev sea inofensivo por el fallback de Mixin).
+// tasks.matching + configureEach engancha el task tanto si ya existe como si se crea despues,
+// sin depender del orden de evaluacion entre plugins.
+tasks.matching { it.name == 'processClientResources' }.configureEach { task ->
+    configureModResourceExpansion(task)
 }
 
 publishing {

@@ -1,0 +1,7 @@
+{
+  "parent": "madnesscore:block/energy_converter_template",
+  "textures": {
+    "particle": "minecraft:block/netherite_block",
+    "0": "madnesscore:block/energy_converter/energy_converter_on"
+  }
+}

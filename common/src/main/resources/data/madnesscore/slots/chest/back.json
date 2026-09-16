@@ -1,5 +1,5 @@
 {
-  "icon": "madnesscore:gui/slots/back",
+  "icon": "madnesscore:gui/slots/slots/back",
   "order": -512,
   "validator_predicates": ["madnesscore:tag"],
   "tooltip_predicates": ["madnesscore:tag"],

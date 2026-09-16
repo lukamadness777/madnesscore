@@ -1,5 +1,5 @@
 {
-  "icon": "madnesscore:gui/slots/aglet",
+  "icon": "madnesscore:gui/slots/slots/aglet",
   "order": -1024,
   "validator_predicates": ["madnesscore:tag"],
   "tooltip_predicates": ["madnesscore:tag"]

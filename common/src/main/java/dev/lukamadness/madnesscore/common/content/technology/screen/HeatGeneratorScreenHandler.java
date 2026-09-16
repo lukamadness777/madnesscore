@@ -13,7 +13,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class HeatGeneratorScreenHandler extends AbstractContainerMenu {
-
     private final Container inventory;
     private final ContainerData containerData;
 
@@ -49,8 +48,8 @@ public class HeatGeneratorScreenHandler extends AbstractContainerMenu {
         addDataSlots(containerData);
     }
 
-    public int getHeat() { return containerData.get(0); }
-    public int getHeatCapacity() { return containerData.get(1); }
+    public int getTemperature() { return containerData.get(0); }
+    public int getMaxTemperature() { return containerData.get(1); }
     public int getBurnTime() { return containerData.get(2); }
     public int getBurnTimeTotal() { return containerData.get(3); }
     public boolean isBurning() { return getBurnTime() > 0; }

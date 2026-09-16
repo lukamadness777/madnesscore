@@ -1,14 +1,9 @@
-// common/tecnology/energy/ModEnergyStorage.java
+
 package dev.lukamadness.madnesscore.common.content.technology.energy;
 
 import net.minecraft.nbt.CompoundTag;
 
-/**
- * Almacén de Energy. Misma forma que ModHeatStorage pero para un recurso DISTINTO —
- * ver la nota en ModHeatStorage.
- */
 public class ModEnergyStorage {
-
     private int energy;
     private final int capacity;
     private final int maxInsert;

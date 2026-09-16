@@ -5,14 +5,17 @@
     "S": {
       "item": "minecraft:string"
     },
+    "T": {
+      "item": "minecraft:stick"
+    },
     "W": {
       "item": "minecraft:blue_wool"
     }
   },
   "pattern": [
-    "SSS",
+    "STS",
     "SWS",
-    "SSS"
+    "STS"
   ],
   "result": {
     "count": 1,

@@ -6,7 +6,6 @@ import dev.lukamadness.madnesscore.common.registry.fluid.FluidRegistryHelper;
 import dev.lukamadness.madnesscore.common.registry.fluid.ModFluidProperties;
 import dev.lukamadness.madnesscore.common.registry.fluid.MutableSupplier;
 import dev.lukamadness.madnesscore.common.registry.fluid.SimpleFlowingFluid;
-import dev.lukamadness.madnesscore.common.registry.helper.RegistryHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
@@ -28,7 +27,6 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public class NeoForgeFluidRegistryHelper implements FluidRegistryHelper {
-
     private static final DeferredRegister<FluidType> FLUID_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, MadnessCoreCommon.MOD_ID);
     private static final DeferredRegister<Fluid> FLUIDS =
@@ -38,10 +36,6 @@ public class NeoForgeFluidRegistryHelper implements FluidRegistryHelper {
     private static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(BuiltInRegistries.ITEM, MadnessCoreCommon.MOD_ID);
 
-    /**
-     * Se usa desde MadnessCoreNeoForgeClient (RegisterClientExtensionsEvent) para
-     * registrar IClientFluidTypeExtensions con las texturas/tinte correctos.
-     */
     private static final Map<String, ModFluidProperties> PENDING_CLIENT_EXTENSIONS = new LinkedHashMap<>();
 
     public static Map<String, ModFluidProperties> getPendingClientExtensions() {
@@ -54,7 +48,6 @@ public class NeoForgeFluidRegistryHelper implements FluidRegistryHelper {
 
     private static final Map<String, DeferredHolder<FluidType, FluidType>> FLUID_TYPE_HOLDERS = new LinkedHashMap<>();
 
-    // Se llama UNA vez desde MadnessCoreNeoForge(IEventBus), junto a NeoForgeRegistryHelper.registerToBus(eventBus)
     public static void registerToBus(IEventBus eventBus) {
         FLUID_TYPES.register(eventBus);
         FLUIDS.register(eventBus);
@@ -125,11 +118,6 @@ public class NeoForgeFluidRegistryHelper implements FluidRegistryHelper {
         );
     }
 
-    /**
-     * Igual que SimpleFlowingFluid.Source pero pisando getFluidType(), que en
-     * NeoForge es un metodo agregado por sus parches ASM sobre Fluid y NO
-     * existe en el classpath vanilla del modulo common.
-     */
     private static class NeoForgeSource extends SimpleFlowingFluid.Source {
         private final Supplier<FluidType> fluidType;
 

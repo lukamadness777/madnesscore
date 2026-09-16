@@ -1,4 +1,4 @@
-// common/tecnology/screen/AlloySmelteryScreenHandler.java
+
 package dev.lukamadness.madnesscore.common.content.technology.screen;
 
 import dev.lukamadness.madnesscore.common.registry.menu.ModMenus;
@@ -15,7 +15,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class AlloySmelteryScreenHandler extends AbstractContainerMenu {
-
     private final Container inventory;
     private final ContainerData containerData;
 
@@ -41,19 +40,17 @@ public class AlloySmelteryScreenHandler extends AbstractContainerMenu {
 
         inventory.startOpen(playerInventory.player);
 
-        // 4 inputs: 2x2, ajustar coordenadas al layout real del GUI
         int[][] inputPos = { {13, 26}, {31, 26}, {13, 44}, {31, 44} };
         for (int i = 0; i < INPUT_SLOTS; i++) {
             this.addSlot(new Slot(inventory, i, inputPos[i][0], inputPos[i][1]));
         }
 
-        // 4 outputs: 2x2, ajustar también
         int[][] outputPos = { {95, 26}, {113, 26}, {95, 44}, {113, 44} };
         for (int i = 0; i < OUTPUT_SLOTS; i++) {
             final int slotIndex = INPUT_SLOTS + i;
             this.addSlot(new Slot(inventory, slotIndex, outputPos[i][0], outputPos[i][1]) {
                 @Override
-                public boolean mayPlace(ItemStack stack) { return false; } // outputs: solo se sacan
+                public boolean mayPlace(ItemStack stack) { return false; }
             });
         }
 
@@ -67,8 +64,8 @@ public class AlloySmelteryScreenHandler extends AbstractContainerMenu {
         addDataSlots(containerData);
     }
 
-    public int getHeat() { return containerData.get(0); }
-    public int getHeatCapacity() { return containerData.get(1); }
+    public int getTemperature() { return containerData.get(0); }
+    public int getMaxTemperature() { return containerData.get(1); }
     public int getProgress() { return containerData.get(2); }
     public int getMaxProgress() { return containerData.get(3); }
 

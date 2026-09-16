@@ -22,12 +22,6 @@ import java.util.Map;
 import java.util.function.UnaryOperator;
 
 public class FabricFluidRegistryHelper implements FluidRegistryHelper {
-
-    /**
-     * Guarda las propiedades visuales de cada fluido registrado para que
-     * FabricFluidRenderRegistrar (client) pueda registrar el FluidRenderHandler
-     * despues, sin tener que duplicar la data.
-     */
     private static final Map<String, RenderEntry> PENDING_RENDER = new LinkedHashMap<>();
 
     public record RenderEntry(Fluid source, Fluid flowing, ModFluidProperties properties) {

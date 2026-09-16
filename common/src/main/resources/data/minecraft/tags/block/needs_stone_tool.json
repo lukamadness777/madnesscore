@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "madnesscore:heat_generator",
+    "madnesscore:alloy_smeltery",
+    "madnesscore:energy_converter",
+    "madnesscore:compressor"
+  ]
+}

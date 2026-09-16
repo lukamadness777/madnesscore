@@ -5,12 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Grupo inmutable de {@link SlotType} (ej: "hand" agrupa "ring" y "glove").
- * Portado de dev.emi.trinkets.api.SlotGroup.
- */
 public final class SlotGroup {
-
     private final String name;
     private final int slotId;
     private final int order;

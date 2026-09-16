@@ -1,4 +1,3 @@
-// common/tecnology/blocks/AlloySmelteryBlock.java
 package dev.lukamadness.madnesscore.common.content.technology.blocks;
 
 import com.mojang.serialization.MapCodec;
@@ -23,48 +22,85 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Stream;
+import java.util.EnumMap;
+import java.util.Map;
 
-/**
- * Recreación de IndustrialSmelterBlock, renombrado a Alloy Smeltery. Funde y fusiona
- * hasta 4 items de input en hasta 4 outputs, corriendo a Energy (no Heat).
- */
 public class AlloySmelteryBlock extends BaseEntityBlock {
-
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
-    // --- Voxel shapes, calcadas del modelo original (industrial_smelter_base.json) ---
-    // Simétricas bajo rotación de 90° (forman un "anillo" cuadrado), idénticas en las 4
-    // orientaciones. Solo la "boca" (apertura frontal) cambia de lado.
-    private static VoxelShape ringShape() {
-        return Stream.of(
-                Block.box(1, 0, 1, 15, 5, 15),   // base
-                Block.box(3, 5, 3, 11, 16, 5),   // pared
-                Block.box(11, 5, 3, 13, 16, 11), // pared
-                Block.box(5, 5, 11, 13, 16, 13),  // pared
-                Block.box(3, 5, 5, 5, 16, 13)     // pared
-        ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    private static final double[][] STRAIGHT = {
+            {2, 9.9, 0, 14, 21.9, 16},
+            {3, 7.9, 0, 13, 9.9, 1},
+            {3, 7.9, 15, 13, 9.9, 16},
+            {6.5, 10.4, 7.2, 15.5, 11.4, 8.2},
+            {6.5, 20.4, 7.2, 15.5, 21.4, 8.2},
+            {15.5, 10.4, 7.2, 16.5, 21.4, 8.2},
+            {14.3, 14.4, 6.2, 17.7, 17.5, 9.2},
+            {9.2, 14.4, -0.1, 12.2, 17.4, 1.1},
+            {0, 0, 0, 16, 8, 16},
+    };
+
+    private static VoxelShape buildShape() {
+        VoxelShape result = Shapes.empty();
+        for (double[] b : STRAIGHT) {
+            result = Shapes.or(result, Block.box(b[0], b[1], b[2], b[3], b[4], b[5]));
+        }
+        return result.optimize();
     }
 
-    private static final VoxelShape RING = ringShape();
+    public static final VoxelShape SHAPE_NORTH = buildShape();
 
-    private static final VoxelShape MOUTH_SOUTH = Block.box(3, 0, 14, 13, 14, 16);
-    private static final VoxelShape MOUTH_NORTH = Block.box(3, 0, 0, 13, 14, 2);
-    private static final VoxelShape MOUTH_WEST  = Block.box(0, 0, 3, 2, 14, 13);
-    private static final VoxelShape MOUTH_EAST  = Block.box(14, 0, 3, 16, 14, 13);
+    private static final double[][] OUTLINE = {
+            {0, 0, 0, 16, 22, 16},
+            {14, 10, 6, 18, 22, 9.5},
+            {9, 14, -0.5, 12.5, 17.5, 1.5},
+    };
 
-    public static final VoxelShape SOUTH_SHAPE = Shapes.join(RING, MOUTH_SOUTH, BooleanOp.OR);
-    public static final VoxelShape NORTH_SHAPE = Shapes.join(RING, MOUTH_NORTH, BooleanOp.OR);
-    public static final VoxelShape WEST_SHAPE  = Shapes.join(RING, MOUTH_WEST, BooleanOp.OR);
-    public static final VoxelShape EAST_SHAPE  = Shapes.join(RING, MOUTH_EAST, BooleanOp.OR);
+    private static VoxelShape buildOutline() {
+        VoxelShape result = Shapes.empty();
+        for (double[] b : OUTLINE) {
+            result = Shapes.or(result, Block.box(b[0], b[1], b[2], b[3], b[4], b[5]));
+        }
+        return result.optimize();
+    }
+
+    public static final VoxelShape OUTLINE_NORTH = buildOutline();
+
+    private static final Map<Direction, VoxelShape> SHAPES_BY_FACING = new EnumMap<>(Direction.class);
+    private static final Map<Direction, VoxelShape> OUTLINES_BY_FACING = new EnumMap<>(Direction.class);
+
+    static {
+        SHAPES_BY_FACING.put(Direction.NORTH, SHAPE_NORTH);
+        SHAPES_BY_FACING.put(Direction.SOUTH, rotateShape(Direction.NORTH, Direction.SOUTH, SHAPE_NORTH));
+        SHAPES_BY_FACING.put(Direction.EAST, rotateShape(Direction.NORTH, Direction.EAST, SHAPE_NORTH));
+        SHAPES_BY_FACING.put(Direction.WEST, rotateShape(Direction.NORTH, Direction.WEST, SHAPE_NORTH));
+
+        OUTLINES_BY_FACING.put(Direction.NORTH, OUTLINE_NORTH);
+        OUTLINES_BY_FACING.put(Direction.SOUTH, rotateShape(Direction.NORTH, Direction.SOUTH, OUTLINE_NORTH));
+        OUTLINES_BY_FACING.put(Direction.EAST, rotateShape(Direction.NORTH, Direction.EAST, OUTLINE_NORTH));
+        OUTLINES_BY_FACING.put(Direction.WEST, rotateShape(Direction.NORTH, Direction.WEST, OUTLINE_NORTH));
+    }
+
+    private static VoxelShape rotateShape(Direction from, Direction to, VoxelShape shape) {
+        VoxelShape[] buffer = new VoxelShape[]{shape, Shapes.empty()};
+
+        int times = (from.get2DDataValue() - to.get2DDataValue() + 4) % 4;
+        for (int i = 0; i < times; i++) {
+            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) ->
+                    buffer[1] = Shapes.or(buffer[1], Shapes.box(minZ, minY, 1 - maxX, maxZ, maxY, 1 - minX)));
+            buffer[0] = buffer[1];
+            buffer[1] = Shapes.empty();
+        }
+        return buffer[0];
+    }
 
     public AlloySmelteryBlock(Properties properties) {
         super(properties);
@@ -126,11 +162,11 @@ public class AlloySmelteryBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case NORTH -> NORTH_SHAPE;
-            case EAST -> EAST_SHAPE;
-            case WEST -> WEST_SHAPE;
-            default -> SOUTH_SHAPE;
-        };
+        return OUTLINES_BY_FACING.get(state.getValue(FACING));
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return SHAPES_BY_FACING.get(state.getValue(FACING));
     }
 }

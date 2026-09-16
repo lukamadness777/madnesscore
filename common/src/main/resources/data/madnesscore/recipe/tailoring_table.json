@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "decorations",
+  "pattern": [
+    "SFS",
+    "PCP",
+    "PPP"
+  ],
+  "key": {
+    "S": { "item": "minecraft:stick" },
+    "F": { "item": "madnesscore:white_fabric" },
+    "C": { "item": "minecraft:crafting_table" },
+    "P": { "tag": "minecraft:planks" }
+  },
+  "result": {
+    "id": "madnesscore:tailoring_table",
+    "count": 1
+  }
+}

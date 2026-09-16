@@ -12,31 +12,26 @@
     "sources": "https://github.com/FabricMC/fabric-example-mod"
   },
   "license": "${license}",
-  "icon": "${mod_id}.png",
+  "icon": "assets/${mod_id}/icon.png",
   "environment": "*",
+  "accessWidener": "madnesscore.accesswidener",
   "entrypoints": {
-    "main": [
-      "dev.lukamadness.madnesscore.fabric.MadnessCoreFabric"
-    ],
-    "client": [
-      "dev.lukamadness.madnesscore.fabric.client.MadnessCoreFabricClient"
-    ],
-    "fabric-datagen": [
-      "dev.lukamadness.madnesscore.fabric.datagen.FabricDataGeneratorEntrypoint"
-    ]
+    "main": ["dev.lukamadness.madnesscore.fabric.MadnessCoreFabric"],
+    "client": ["dev.lukamadness.madnesscore.fabric.client.MadnessCoreFabricClient"],
+    "fabric-datagen": ["dev.lukamadness.madnesscore.fabric.datagen.FabricDataGeneratorEntrypoint"],
+    "jei_mod_plugin": ["dev.lukamadness.madnesscore.common.client.compat.jei.MadnessCoreJeiPlugin"],
+    "jade": ["dev.lukamadness.madnesscore.common.client.compat.jade.MadnessCoreJadePlugin"]
   },
   "mixins": [
     "${mod_id}.mixins.json",
-    "${mod_id}.client.mixins.json",
-    "${mod_id}.fabric.mixins.json"
+    {"config": "${mod_id}.client.mixins.json", "environment": "client"},
+    "${mod_id}.fabric.mixins.json",
+    { "config": "${mod_id}.fabric.client.mixins.json", "environment": "client" }
   ],
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
     "fabric-api": "*",
     "minecraft": "${minecraft_version}",
     "java": ">=${java_version}"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }

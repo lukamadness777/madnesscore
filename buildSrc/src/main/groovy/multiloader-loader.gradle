@@ -6,7 +6,7 @@ configurations {
     commonJava { canBeResolved = true }
     commonResources { canBeResolved = true }
     commonClientJava { canBeResolved = true }
-    commonClientResources { canBeResolved = true }   // NUEVO
+    commonClientResources { canBeResolved = true }
 }
 
 dependencies {
@@ -14,7 +14,7 @@ dependencies {
     commonJava project(path: ':common', configuration: 'commonJava')
     commonResources project(path: ':common', configuration: 'commonResources')
     commonClientJava project(path: ':common', configuration: 'commonClientJava')
-    commonClientResources project(path: ':common', configuration: 'commonClientResources')   // NUEVO
+    commonClientResources project(path: ':common', configuration: 'commonClientResources')
 }
 
 tasks.named('compileJava', JavaCompile) {
@@ -27,8 +27,7 @@ processResources {
     from(configurations.commonResources)
 }
 
-afterEvaluate {
-    // Java client-only
+gradle.projectsEvaluated {
     def clientJavaTask = tasks.findByName('compileClientJava')
     if (clientJavaTask != null) {
         clientJavaTask.configure {
@@ -42,7 +41,6 @@ afterEvaluate {
         }
     }
 
-    // Resources client-only (NUEVO)
     def clientResTask = tasks.findByName('processClientResources')
     if (clientResTask != null) {
         clientResTask.configure {
@@ -55,18 +53,17 @@ afterEvaluate {
             from(configurations.commonClientResources)
         }
     }
-}
 
-tasks.named('javadoc', Javadoc).configure {
-    dependsOn(configurations.commonJava)
-    source(configurations.commonJava)
-}
+    tasks.named('javadoc', Javadoc) {
+        dependsOn(configurations.commonJava, configurations.commonClientJava)
+        source(configurations.commonJava)
+        source(configurations.commonClientJava)
 
-tasks.named('sourcesJar', Jar) {
-    dependsOn(configurations.commonJava)
-    from(configurations.commonJava)
-    dependsOn(configurations.commonResources)
-    from(configurations.commonResources)
+        def clientSourceSet = sourceSets.findByName('client')
+        if (clientSourceSet != null) {
+            classpath += clientSourceSet.compileClasspath
+        }
+    }
 }
 
 processResources {
@@ -74,14 +71,17 @@ processResources {
     from(configurations.commonResources)
 }
 
-tasks.named('javadoc', Javadoc).configure {
-    dependsOn(configurations.commonJava)
-    source(configurations.commonJava)
+tasks.named('sourcesJar', Jar) {
+    dependsOn(configurations.commonJava, configurations.commonResources,
+            configurations.commonClientJava, configurations.commonClientResources)
+    from(configurations.commonJava)
+    from(configurations.commonResources)
+    from(configurations.commonClientJava)
+    from(configurations.commonClientResources)
 }
 
-tasks.named('sourcesJar', Jar) {
-    dependsOn(configurations.commonJava)
-    from(configurations.commonJava)
-    dependsOn(configurations.commonResources)
-    from(configurations.commonResources)
+tasks.named('javadoc', Javadoc) {
+    dependsOn(configurations.commonJava, configurations.commonClientJava)
+    source(configurations.commonJava)
+    source(configurations.commonClientJava)
 }

@@ -1,0 +1,10 @@
+{
+  "type": "madnesscore:tailoring",
+  "ingredients": [
+    { "optional_color": true, "count": 1 }
+  ],
+  "output": {
+    "id": "madnesscore:dyeable_shirt",
+    "count": 1
+  }
+}

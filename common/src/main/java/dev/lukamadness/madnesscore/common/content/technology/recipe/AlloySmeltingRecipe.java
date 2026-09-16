@@ -1,4 +1,3 @@
-// common/tecnology/recipe/AlloySmeltingRecipe.java
 package dev.lukamadness.madnesscore.common.content.technology.recipe;
 
 import com.mojang.serialization.Codec;
@@ -20,29 +19,20 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Recreación de SmeltingRecipe (proyecto normal) para el Alloy Smeltery: hasta 4
- * ingredientes de input (cada uno con su count propio) y hasta 4 outputs, sin
- * importar en qué slot físico caiga cada input — findAssignment() busca cualquier
- * asignación válida ingrediente -> slot.
- */
 public class AlloySmeltingRecipe implements Recipe<AlloySmelteryRecipeInput> {
-
     public static final int MAX_INPUTS = 4;
     public static final int MAX_OUTPUTS = 4;
 
     private final List<IngredientEntry> inputs;
     private final List<ItemStack> outputs;
     private final int processTime;
-    private final int heatPerTick;
 
-    public AlloySmeltingRecipe(List<IngredientEntry> inputs, List<ItemStack> outputs, int processTime, int heatPerTick) {
+    public AlloySmeltingRecipe(List<IngredientEntry> inputs, List<ItemStack> outputs, int processTime) {
         if (inputs.size() > MAX_INPUTS) throw new IllegalArgumentException("Máximo " + MAX_INPUTS + " inputs");
         if (outputs.size() > MAX_OUTPUTS) throw new IllegalArgumentException("Máximo " + MAX_OUTPUTS + " outputs");
         this.inputs = inputs;
         this.outputs = outputs;
         this.processTime = processTime;
-        this.heatPerTick = heatPerTick;
     }
 
     public int[] findAssignment(AlloySmelteryRecipeInput input) {
@@ -82,7 +72,6 @@ public class AlloySmeltingRecipe implements Recipe<AlloySmelteryRecipeInput> {
 
     @Override
     public ItemStack assemble(AlloySmelteryRecipeInput input, HolderLookup.Provider registries) {
-        // El multi-output real se maneja en el BlockEntity (getOutputs()); esto solo satisface la interfaz.
         return outputs.isEmpty() ? ItemStack.EMPTY : outputs.get(0).copy();
     }
 
@@ -99,7 +88,6 @@ public class AlloySmeltingRecipe implements Recipe<AlloySmelteryRecipeInput> {
     public List<IngredientEntry> getInputs() { return inputs; }
     public List<ItemStack> getOutputs() { return outputs; }
     public int getProcessTime() { return processTime; }
-    public int getHeatPerTick() { return heatPerTick; }
 
     @Override
     public RecipeSerializer<? extends Recipe<AlloySmelteryRecipeInput>> getSerializer() {
@@ -125,19 +113,16 @@ public class AlloySmeltingRecipe implements Recipe<AlloySmelteryRecipeInput> {
     }
 
     public static class Serializer implements RecipeSerializer<AlloySmeltingRecipe> {
-
         public static final MapCodec<AlloySmeltingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 IngredientEntry.CODEC.listOf(1, MAX_INPUTS).fieldOf("inputs").forGetter(AlloySmeltingRecipe::getInputs),
                 ItemStack.CODEC.listOf(1, MAX_OUTPUTS).fieldOf("outputs").forGetter(AlloySmeltingRecipe::getOutputs),
-                Codec.INT.optionalFieldOf("processtime", 200).forGetter(AlloySmeltingRecipe::getProcessTime),
-                Codec.INT.optionalFieldOf("heat_per_tick", 40).forGetter(AlloySmeltingRecipe::getHeatPerTick)
+                Codec.INT.optionalFieldOf("processtime", 200).forGetter(AlloySmeltingRecipe::getProcessTime)
         ).apply(instance, AlloySmeltingRecipe::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, AlloySmeltingRecipe> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.collection(ArrayList::new, IngredientEntry.STREAM_CODEC), AlloySmeltingRecipe::getInputs,
                 ByteBufCodecs.collection(ArrayList::new, ItemStack.STREAM_CODEC), AlloySmeltingRecipe::getOutputs,
                 ByteBufCodecs.VAR_INT, AlloySmeltingRecipe::getProcessTime,
-                ByteBufCodecs.VAR_INT, AlloySmeltingRecipe::getHeatPerTick,
                 AlloySmeltingRecipe::new
         );
 

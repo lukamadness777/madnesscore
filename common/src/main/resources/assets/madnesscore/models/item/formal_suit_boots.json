@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "madnesscore:item/formal_suit_boots",
+    "layer1": "madnesscore:item/formal_suit_pants"
+  }
+}

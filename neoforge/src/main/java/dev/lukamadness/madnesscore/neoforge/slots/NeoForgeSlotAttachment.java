@@ -6,13 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 import java.util.Optional;
 
-/**
- * Implementacion NeoForge de {@link ISlotAttachment} sobre {@link SlotAttachments#SLOT_COMPONENT}.
- * {@code getData} ya crea el valor por defecto (via el constructor pasado a
- * {@code AttachmentType.builder}) la primera vez que se pide, asi que "getOrCreate" es directo.
- */
 public class NeoForgeSlotAttachment implements ISlotAttachment {
-
     @Override
     public LivingEntitySlotComponent getOrCreate(LivingEntity entity) {
         return entity.getData(SlotAttachments.SLOT_COMPONENT.get());

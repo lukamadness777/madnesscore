@@ -1,0 +1,18 @@
+{
+  "type": "madnesscore:alloy_smelting",
+  "inputs": [
+    {
+      "ingredient": { "item": "minecraft:iron_ingot" },
+      "count": 3
+    },
+    {
+      "ingredient": { "tag": "minecraft:coals" },
+      "count": 1
+    }
+  ],
+  "outputs": [
+    { "id": "madnesscore:steel_ingot", "count": 3 }
+  ],
+  "processtime": 240,
+  "heat_per_tick": 45
+}

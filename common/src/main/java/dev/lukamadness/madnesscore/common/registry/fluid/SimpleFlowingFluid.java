@@ -21,21 +21,7 @@ import net.minecraft.world.level.material.FluidState;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-/**
- * Base 100% comun (vanilla puro, sin API de Fabric ni de NeoForge) para un
- * fluido custom, modelada sobre WaterFluid/LavaFluid. Toda la data que hace
- * falta (fluido opuesto, bloque, bucket, sonidos) se inyecta via
- * {@link Properties} con Suppliers para poder resolver referencias
- * circulares (source {@code <->} flowing) despues de terminado el registro.
- * <p>
- * NOTA: en NeoForge, {@code Fluid} tiene un metodo adicional
- * {@code getFluidType()} que esta clase NO puede implementar porque ese
- * metodo no existe en el classpath vanilla del modulo common. Por eso
- * NeoForgeFluidRegistryHelper usa subclases propias (NeoForgeSource /
- * NeoForgeFlowing) que extienden Source/Flowing y agregan ese override.
- */
 public abstract class SimpleFlowingFluid extends FlowingFluid {
-
     protected final Properties properties;
 
     protected SimpleFlowingFluid(Properties properties) {
@@ -150,11 +136,6 @@ public abstract class SimpleFlowingFluid extends FlowingFluid {
         }
     }
 
-    /**
-     * Propiedades de comportamiento del fluido (nada de rendering: eso vive
-     * en {@link ModFluidProperties}, que es lo que consume cada
-     * FluidRegistryHelper por plataforma).
-     */
     public static class Properties {
         Supplier<? extends Fluid> still;
         Supplier<? extends Fluid> flowing;

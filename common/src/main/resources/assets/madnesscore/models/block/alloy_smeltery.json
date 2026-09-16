@@ -1,0 +1,7 @@
+{
+  "parent": "madnesscore:block/alloy_smeltery_template",
+  "textures": {
+    "particle": "minecraft:block/iron_block",
+    "0": "madnesscore:block/alloy_smeltery/alloy_smeltery"
+  }
+}

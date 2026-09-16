@@ -1,0 +1,114 @@
+{
+  "fabric:load_conditions": [
+    { "condition": "fabric:all_mods_loaded", "values": ["dye_depot"] }
+  ],
+  "neoforge:conditions": [
+    { "type": "neoforge:mod_loaded", "modid": "dye_depot" }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    [
+      {
+        "item": "madnesscore:white_fabric"
+      },
+      {
+        "item": "madnesscore:orange_fabric"
+      },
+      {
+        "item": "madnesscore:magenta_fabric"
+      },
+      {
+        "item": "madnesscore:light_blue_fabric"
+      },
+      {
+        "item": "madnesscore:yellow_fabric"
+      },
+      {
+        "item": "madnesscore:lime_fabric"
+      },
+      {
+        "item": "madnesscore:pink_fabric"
+      },
+      {
+        "item": "madnesscore:gray_fabric"
+      },
+      {
+        "item": "madnesscore:light_gray_fabric"
+      },
+      {
+        "item": "madnesscore:cyan_fabric"
+      },
+      {
+        "item": "madnesscore:purple_fabric"
+      },
+      {
+        "item": "madnesscore:blue_fabric"
+      },
+      {
+        "item": "madnesscore:brown_fabric"
+      },
+      {
+        "item": "madnesscore:green_fabric"
+      },
+      {
+        "item": "madnesscore:red_fabric"
+      },
+      {
+        "item": "madnesscore:black_fabric"
+      },
+      {
+        "item": "madnesscore:maroon_fabric"
+      },
+      {
+        "item": "madnesscore:rose_fabric"
+      },
+      {
+        "item": "madnesscore:coral_fabric"
+      },
+      {
+        "item": "madnesscore:ginger_fabric"
+      },
+      {
+        "item": "madnesscore:tan_fabric"
+      },
+      {
+        "item": "madnesscore:beige_fabric"
+      },
+      {
+        "item": "madnesscore:amber_fabric"
+      },
+      {
+        "item": "madnesscore:olive_fabric"
+      },
+      {
+        "item": "madnesscore:forest_fabric"
+      },
+      {
+        "item": "madnesscore:verdant_fabric"
+      },
+      {
+        "item": "madnesscore:teal_fabric"
+      },
+      {
+        "item": "madnesscore:aqua_fabric"
+      },
+      {
+        "item": "madnesscore:slate_fabric"
+      },
+      {
+        "item": "madnesscore:navy_fabric"
+      },
+      {
+        "item": "madnesscore:indigo_fabric"
+      }
+    ],
+    {
+      "item": "dye_depot:mint_dye"
+    }
+  ],
+  "result": {
+    "id": "madnesscore:mint_fabric",
+    "count": 1
+  }
+}

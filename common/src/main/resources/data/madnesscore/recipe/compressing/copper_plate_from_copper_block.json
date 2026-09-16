@@ -1,0 +1,12 @@
+{
+  "type": "madnesscore:compressing",
+  "ingredient": {
+    "item": "minecraft:copper_block"
+  },
+  "result": {
+    "id": "madnesscore:copper_plate",
+    "count": 9
+  },
+  "processtime": 200,
+  "energy_per_tick": 20
+}

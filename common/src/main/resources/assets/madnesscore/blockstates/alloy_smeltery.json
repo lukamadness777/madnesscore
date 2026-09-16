@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "facing=north,lit=false,powered=false": { "model": "madnesscore:block/alloy_smeltery" },
+    "facing=north,lit=false,powered=true":  { "model": "madnesscore:block/alloy_smeltery" },
+    "facing=north,lit=true,powered=false":  { "model": "madnesscore:block/alloy_smeltery" },
+    "facing=north,lit=true,powered=true":   { "model": "madnesscore:block/alloy_smeltery" },
+
+    "facing=east,lit=false,powered=false": { "model": "madnesscore:block/alloy_smeltery", "y": 90 },
+    "facing=east,lit=false,powered=true":  { "model": "madnesscore:block/alloy_smeltery", "y": 90 },
+    "facing=east,lit=true,powered=false":  { "model": "madnesscore:block/alloy_smeltery", "y": 90 },
+    "facing=east,lit=true,powered=true":   { "model": "madnesscore:block/alloy_smeltery", "y": 90 },
+
+    "facing=south,lit=false,powered=false": { "model": "madnesscore:block/alloy_smeltery", "y": 180 },
+    "facing=south,lit=false,powered=true":  { "model": "madnesscore:block/alloy_smeltery", "y": 180 },
+    "facing=south,lit=true,powered=false":  { "model": "madnesscore:block/alloy_smeltery", "y": 180 },
+    "facing=south,lit=true,powered=true":   { "model": "madnesscore:block/alloy_smeltery", "y": 180 },
+
+    "facing=west,lit=false,powered=false": { "model": "madnesscore:block/alloy_smeltery", "y": 270 },
+    "facing=west,lit=false,powered=true":  { "model": "madnesscore:block/alloy_smeltery", "y": 270 },
+    "facing=west,lit=true,powered=false":  { "model": "madnesscore:block/alloy_smeltery", "y": 270 },
+    "facing=west,lit=true,powered=true":   { "model": "madnesscore:block/alloy_smeltery", "y": 270 }
+  }
+}

@@ -1,7 +1,6 @@
 package dev.lukamadness.madnesscore.common.api.slots;
 
 import dev.lukamadness.madnesscore.common.slots.SlotEquipLogic;
-import dev.lukamadness.madnesscore.common.slots.SlotsApi;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -15,13 +14,7 @@ import net.minecraft.world.level.Level;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Base conveniente para items equipables en un slot: se auto-registra como {@link Slottable} al
- * construirse, y al usarse (click derecho) intenta auto-equiparse en el primer slot compatible
- * libre. Portado de dev.emi.trinkets.api.TrinketItem.
- */
 public class SlotItem extends Item implements Slottable {
-
     public SlotItem(Properties properties) {
         super(properties);
         SlotsApi.registerSlottable(this, this);
@@ -40,10 +33,6 @@ public class SlotItem extends Item implements Slottable {
         return equipItem((LivingEntity) user, stack);
     }
 
-    /**
-     * Intenta equipar el stack en el primer slot libre y compatible de la entidad. Consume el
-     * stack de la mano (count = 0) si tiene exito.
-     */
     public static boolean equipItem(LivingEntity user, ItemStack stack) {
         Optional<SlotComponent> optional = SlotsApi.getSlotComponent(user);
         if (optional.isPresent()) {

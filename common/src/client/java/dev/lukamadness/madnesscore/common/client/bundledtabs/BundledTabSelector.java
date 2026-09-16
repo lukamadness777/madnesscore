@@ -1,8 +1,8 @@
 package dev.lukamadness.madnesscore.common.client.bundledtabs;
 
-import dev.lukamadness.madnesscore.common.client.mixin.AbstractContainerScreenAccessor;
-import dev.lukamadness.madnesscore.common.client.mixin.CreativeModeInventoryScreenAccessor;
-import dev.lukamadness.madnesscore.common.client.mixin.ItemPickerMenuAccessor;
+import dev.lukamadness.madnesscore.common.client.mixin.accessor.AbstractContainerScreenAccessor;
+import dev.lukamadness.madnesscore.common.client.mixin.accessor.CreativeModeInventoryScreenAccessor;
+import dev.lukamadness.madnesscore.common.client.mixin.accessor.ItemPickerMenuAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -23,15 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * Selector lateral de bundle tabs. Vive en la screen de inventario creativo
- * (uno por instancia de {@link CreativeModeInventoryScreen}, ver
- * {@code MixinCreativeModeInventoryScreen}) y soporta CUALQUIER cantidad de
- * {@link BundledTabGroup} registrados en {@link BundledTabsAPI}: cada vez
- * que el jugador cambia de CreativeModeTab, reconstruye la barra lateral
- * para el grupo correspondiente a esa pestaña (o la esconde si no tiene
- * ninguno registrado).
- */
 public class BundledTabSelector {
     private static final int VISIBLE_CATEGORIES = 5;
 
@@ -106,14 +97,6 @@ public class BundledTabSelector {
         this.currentGroup = null;
     }
 
-    /**
-     * Llamado desde el mixin justo después de que vanilla ejecuta
-     * selectTab(...). Clickear cualquier pestaña de arriba (aunque sea la
-     * misma ya activa) siempre deselecciona cualquier bundle activa y
-     * vuelve a la vista resuelta (todos los items, deduplicados), porque
-     * vanilla repuebla menu.items ahí adentro pisando lo que nosotros
-     * pusimos con updateItems().
-     */
     public void onVanillaTabSelected(CreativeModeTab tab) {
         if (this.currentGroup != null && this.currentGroup.getTab() == tab) {
             this.currentGroup.getTabs().forEach(BundledTab::deselect);
@@ -215,8 +198,6 @@ public class BundledTabSelector {
         boolean hasSelection = bundles.stream().anyMatch(BundledTab::isSelected);
 
         if (hasSelection) {
-            // Con una (o más) pestaña seleccionada: se muestran sus items
-            // tal cual, sin resolver duplicados entre pestañas.
             for (BundledTab bundle : bundles) {
                 if (!bundle.isSelected()) continue;
                 for (ItemStack stack : bundle.getDisplayItems()) {
@@ -224,8 +205,6 @@ public class BundledTabSelector {
                 }
             }
         } else {
-            // Sin ninguna pestaña seleccionada se muestran todos los items
-            // juntos, deduplicados por tipo de item.
             HashSet<Item> seenItems = new HashSet<>();
             for (BundledTab bundle : bundles) {
                 for (ItemStack stack : bundle.getDisplayItems()) {
@@ -265,9 +244,7 @@ public class BundledTabSelector {
         @Override
         public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             int textureY = this.isHovered ? 12 : 0;
-            // texture() se re-evalúa cada frame: si el mod que registró el
-            // grupo devuelve una ResourceLocation dinámica (ej. según la
-            // dimensión), el cambio se refleja al toque sin reabrir el menú.
+
             graphics.blit(this.group.getTexture(), this.getX(), this.getY(), this.uOffset, textureY, 18, 11);
         }
     }

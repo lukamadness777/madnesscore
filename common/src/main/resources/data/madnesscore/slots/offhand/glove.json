@@ -1,5 +1,5 @@
 {
-  "icon": "madnesscore:gui/slots/glove_mirrored",
+  "icon": "madnesscore:gui/slots/slots/glove_mirrored",
   "order": -512,
   "validator_predicates": ["madnesscore:tag"],
   "tooltip_predicates": ["madnesscore:tag"]

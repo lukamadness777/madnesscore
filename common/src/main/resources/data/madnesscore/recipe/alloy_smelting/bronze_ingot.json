@@ -1,0 +1,22 @@
+{
+  "type": "madnesscore:alloy_smelting",
+  "inputs": [
+    {
+      "ingredient": { "item": "minecraft:copper_ingot" },
+      "count": 2
+    },
+    {
+      "ingredient": { "item": "minecraft:gold_ingot" },
+      "count": 1
+    },
+    {
+      "ingredient": { "item": "minecraft:iron_ingot" },
+      "count": 1
+    }
+  ],
+  "outputs": [
+    { "id": "madnesscore:bronze_ingot", "count": 1 }
+  ],
+  "processtime": 220,
+  "heat_per_tick": 45
+}

@@ -11,8 +11,6 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import java.util.concurrent.CompletableFuture;
 
 public class NeoForgeDataGenerator {
-
-    // Se llama UNA vez desde MadnessCoreNeoForge(IEventBus), junto al resto de los registerToBus(...)
     public static void registerToBus(IEventBus eventBus) {
         eventBus.addListener(NeoForgeDataGenerator::gatherData);
     }

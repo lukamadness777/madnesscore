@@ -1,0 +1,6 @@
+{
+  "type": "madnesscore:heat_fuel",
+  "item": { "tag": "minecraft:coals" },
+  "temperature": 650,
+  "burn_time": 1600
+}

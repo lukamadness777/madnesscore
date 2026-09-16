@@ -9,28 +9,18 @@ import net.minecraft.world.level.biome.Biomes;
 
 import java.util.Set;
 
-/**
- * Clasifica el bioma de una posición para la pérdida ambiental de Heat, tal como se
- * definió en el diseño: Taiga (y biomas fríos/nevados en general) pierde más, Plains
- * (y cualquier bioma no listado) es la base, Desierto (y biomas cálidos/áridos) pierde
- * menos. Usado por HeatGeneratorBlockEntity para escalar tanto la pérdida de amount
- * como la de temperature.
- */
 public final class HeatEnvironment {
-
     private HeatEnvironment() {}
 
     public static final double TAIGA_LOSS_MULTIPLIER = 1.5;
     public static final double PLAINS_LOSS_MULTIPLIER = 1.0;
     public static final double DESERT_LOSS_MULTIPLIER = 0.5;
 
-    /**
-     * Pérdida de temperatura base (°C/tick, ritmo Plains) antes de aplicar el
-     * multiplicador de bioma. Compartida por cualquier bloque con temperatura propia
-     * (HeatGeneratorBlockEntity, AlloySmelteryBlockEntity y futuras mesas) para que
-     * todas enfríen al mismo ritmo salvo que definan una razón propia.
-     */
-    public static final double BASE_TEMPERATURE_LOSS_PER_TICK = 0.05; // ~1°C/seg a ritmo Plains
+    public static final double TAIGA_HEATING_MULTIPLIER = 0.5;
+    public static final double PLAINS_HEATING_MULTIPLIER = 1.0;
+    public static final double DESERT_HEATING_MULTIPLIER = 1.5;
+
+    public static final double BASE_TEMPERATURE_LOSS_RATE = 0.01;
 
     private static final Set<ResourceKey<Biome>> COLD_BIOMES = Set.of(
             Biomes.TAIGA, Biomes.SNOWY_TAIGA, Biomes.OLD_GROWTH_PINE_TAIGA, Biomes.OLD_GROWTH_SPRUCE_TAIGA,
@@ -40,20 +30,33 @@ public final class HeatEnvironment {
 
     private static final Set<ResourceKey<Biome>> HOT_DRY_BIOMES = Set.of(
             Biomes.DESERT, Biomes.BADLANDS, Biomes.ERODED_BADLANDS, Biomes.WOODED_BADLANDS,
-            Biomes.SAVANNA, Biomes.SAVANNA_PLATEAU, Biomes.NETHER_WASTES
+            Biomes.SAVANNA, Biomes.SAVANNA_PLATEAU
     );
 
-    /** Multiplicador de pérdida ambiental para la posición dada (1.0 = ritmo Plains). */
     public static double lossMultiplier(Level level, BlockPos pos) {
+        if (isNether(level)) return DESERT_LOSS_MULTIPLIER;
         Holder<Biome> biome = level.getBiome(pos);
         return biome.unwrapKey()
-                .map(HeatEnvironment::multiplierFor)
+                .map(key -> multiplierFor(key, COLD_BIOMES, TAIGA_LOSS_MULTIPLIER, DESERT_LOSS_MULTIPLIER, PLAINS_LOSS_MULTIPLIER))
                 .orElse(PLAINS_LOSS_MULTIPLIER);
     }
 
-    private static double multiplierFor(ResourceKey<Biome> key) {
-        if (COLD_BIOMES.contains(key)) return TAIGA_LOSS_MULTIPLIER;
-        if (HOT_DRY_BIOMES.contains(key)) return DESERT_LOSS_MULTIPLIER;
-        return PLAINS_LOSS_MULTIPLIER;
+    public static double heatGainMultiplier(Level level, BlockPos pos) {
+        if (isNether(level)) return DESERT_HEATING_MULTIPLIER;
+        Holder<Biome> biome = level.getBiome(pos);
+        return biome.unwrapKey()
+                .map(key -> multiplierFor(key, COLD_BIOMES, TAIGA_HEATING_MULTIPLIER, DESERT_HEATING_MULTIPLIER, PLAINS_HEATING_MULTIPLIER))
+                .orElse(PLAINS_HEATING_MULTIPLIER);
+    }
+
+    private static boolean isNether(Level level) {
+        return level.dimension() == Level.NETHER;
+    }
+
+    private static double multiplierFor(ResourceKey<Biome> key, Set<ResourceKey<Biome>> coldSet,
+                                         double coldValue, double hotValue, double baseValue) {
+        if (coldSet.contains(key)) return coldValue;
+        if (HOT_DRY_BIOMES.contains(key)) return hotValue;
+        return baseValue;
     }
 }

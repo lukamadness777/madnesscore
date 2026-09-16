@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public class NeoForgePlatformHelper implements IPlatformHelper {
-
     @Override
     public String getPlatformName() {
         return "NeoForge";

@@ -1,0 +1,192 @@
+# Madness Core License
+
+Except where otherwise stated (see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for
+code incorporated from other projects, which remains under its own original
+license), Madness Core is licensed under the **PolyForm Shield License 1.0.0**,
+with one additional supplementary term defined below (the "Version Porting
+Exception"). The base PolyForm Shield text is unmodified and reproduced in
+full; the supplementary term is clearly marked as an addition by the Licensor,
+as permitted under that license.
+
+Required Notice: Copyright LukaMadness
+
+---
+
+## PolyForm Shield License 1.0.0
+
+<https://polyformproject.org/licenses/shield/1.0.0>
+
+### Acceptance
+
+In order to get any license under these terms, you must agree to them as both
+strict obligations and conditions to all your licenses.
+
+### Copyright License
+
+The licensor grants you a copyright license for the software to do everything
+you might do with the software that would otherwise infringe the licensor's
+copyright in it for any permitted purpose. However, you may only distribute
+the software according to Distribution License and make changes or new works
+based on the software according to Changes and New Works License.
+
+### Distribution License
+
+The licensor grants you an additional copyright license to distribute copies
+of the software. Your license to distribute covers distributing the software
+with changes and new works permitted by Changes and New Works License.
+
+### Notices
+
+You must ensure that anyone who gets a copy of any part of the software from
+you also gets a copy of these terms or the URL for them above, as well as
+copies of any plain-text lines beginning with `Required Notice:` that the
+licensor provided with the software. For example:
+
+> Required Notice: Copyright Yoyodyne, Inc. (<http://example.com>)
+
+### Changes and New Works License
+
+The licensor grants you an additional copyright license to make changes and
+new works based on the software for any permitted purpose.
+
+### Patent License
+
+The licensor grants you a patent license for the software that covers patent
+claims the licensor can license, or becomes able to license, that you would
+infringe by using the software.
+
+### Noncompete
+
+Any purpose is a permitted purpose, except for providing any product that
+competes with the software or any product the licensor or any of its
+affiliates provides using the software.
+
+### Competition
+
+Goods and services compete even when they provide functionality through
+different kinds of interfaces or for different technical platforms.
+Applications can compete with services, libraries with plugins, frameworks
+with development tools, and so on, even if they're written in different
+programming languages or for different computer architectures. Goods and
+services compete even when provided free of charge. If you market a product
+as a practical substitute for the software or another product, it definitely
+competes.
+
+### Version Porting Exception
+
+*(Supplementary term added by the Licensor, as permitted under this license.)*
+
+Notwithstanding the Competition section above, providing a straightforward
+port of the software (or a work based on it) for a version of Minecraft that,
+at the time you provide it, the Licensor's software does not officially
+support and has not publicly announced plans to support, does not by itself
+make that product compete with the software.
+
+As of the date of this license, the Licensor officially supports and plans
+to continue supporting Minecraft 1.21.1 and all later Minecraft versions
+(see the `Licensor Line of Business:` line above). Minecraft versions prior
+to 1.21.1 (for example, but not limited to, 1.20.1 or 1.12.2) are not
+currently planned by the Licensor, and this exception therefore applies to
+straightforward ports targeting those earlier versions. This baseline may
+change over time as described below.
+
+For the purposes of this exception:
+
+- A **"straightforward port"** means a version whose changes are reasonably
+  limited to what is needed to make the software function correctly on the
+  target Minecraft version (e.g. updated mappings, updated dependencies,
+  compatibility fixes). It does not include a product that reproduces
+  substantially all of the functionality of the software while adding new
+  original content, systems, or features beyond what a reasonable port
+  requires — such a product remains subject to the Competition section
+  regardless of which Minecraft version it targets.
+- If the Licensor later officially supports, or publicly announces plans to
+  support, a Minecraft version previously covered by this exception, the
+  exception ceases to apply to any new copies provided for that version from
+  that point forward. Copies already provided before that announcement are
+  not affected.
+
+### New Products
+
+If you are using the software to provide a product that does not compete, but
+the licensor or any of its affiliates brings your product into competition by
+providing a new version of the software or another product using the
+software, you may continue using versions of the software available under
+these terms beforehand to provide your competing product, but not any later
+versions.
+
+### Discontinued Products
+
+You may begin using the software to compete with a product or service that
+the licensor or any of its affiliates has stopped providing, unless the
+licensor includes a plain-text line beginning with `Licensor Line of
+Business:` with the software that mentions that line of business. For
+example:
+
+> Licensor Line of Business: YoyodyneCMS Content Management System
+> (<http://example.com/cms>)
+
+### Sales of Business
+
+If the licensor or any of its affiliates sells a line of business developing
+the software or using the software to provide a product, the buyer can also
+enforce Noncompete for that product.
+
+### Fair Use
+
+You may have "fair use" rights for the software under the law. These terms do
+not limit them.
+
+### No Other Rights
+
+These terms do not allow you to sublicense or transfer any of your licenses
+to anyone else, or prevent the licensor from granting licenses to anyone
+else. These terms do not imply any other licenses.
+
+### Patent Defense
+
+If you make any written claim that the software infringes or contributes to
+infringement of any patent, your patent license for the software granted
+under these terms ends immediately. If your company makes such a claim, your
+patent license ends immediately for work on behalf of your company.
+
+### Violations
+
+The first time you are notified in writing that you have violated any of
+these terms, or done anything with the software not covered by your
+licenses, your licenses can nonetheless continue if you come into full
+compliance with these terms, and take practical steps to correct past
+violations, within 32 days of receiving notice. Otherwise, all your licenses
+end immediately.
+
+### No Liability
+
+**As far as the law allows, the software comes as is, without any warranty or
+condition, and the licensor will not be liable to you for any damages arising
+out of these terms or the use or nature of the software, under any kind of
+legal claim.**
+
+### Definitions
+
+The **licensor** is the individual or entity offering these terms, and the
+**software** is the software the licensor makes available under these terms.
+
+A **product** can be a good or service, or a combination of them.
+
+**You** refers to the individual or entity agreeing to these terms.
+
+**Your company** is any legal entity, sole proprietorship, or other kind of
+organization that you work for, plus all its affiliates.
+
+**Affiliates** means the other organizations than an organization has control
+over, is under the control of, or is under common control with.
+
+**Control** means ownership of substantially all the assets of an entity, or
+the power to direct its management and policies by vote, contract, or
+otherwise. Control can be direct or indirect.
+
+**Your licenses** are all the licenses granted to you for the software under
+these terms.
+
+**Use** means anything you do with the software requiring one of your
+licenses.

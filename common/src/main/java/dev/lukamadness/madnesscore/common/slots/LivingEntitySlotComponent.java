@@ -3,11 +3,8 @@ package dev.lukamadness.madnesscore.common.slots;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.datafixers.util.Pair;
-import dev.lukamadness.madnesscore.common.api.slots.SlotComponent;
-import dev.lukamadness.madnesscore.common.api.slots.SlotGroup;
-import dev.lukamadness.madnesscore.common.api.slots.SlotInventory;
-import dev.lukamadness.madnesscore.common.api.slots.SlotReference;
-import dev.lukamadness.madnesscore.common.api.slots.SlotType;
+import dev.lukamadness.madnesscore.common.MadnessCoreCommon;
+import dev.lukamadness.madnesscore.common.api.slots.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -28,41 +25,14 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-/**
- * Implementacion de {@link SlotComponent} para cualquier {@link LivingEntity}. No depende de
- * ningun framework de "entity components" externo (a diferencia del Trinkets original, que usa
- * Cardinal Components API y por eso es exclusivo de Fabric): es un POJO plano al que cada loader
- * decide como adjuntarse (ver {@code ISlotAttachment}).
- * <p>
- * Portado de dev.emi.trinkets.api.LivingEntityTrinketComponent.
- */
 public class LivingEntitySlotComponent implements SlotComponent {
-
     private Map<String, Map<String, SlotInventory>> inventory = new HashMap<>();
     private final Set<SlotInventory> trackingUpdates = new HashSet<>();
     private final Map<String, SlotGroup> groups = new HashMap<>();
     private final LivingEntity entity;
 
-    /**
-     * Ultimo stack visto en cada slot ("grupo/slot/indice" -> stack), usado por {@link SlotTicker}
-     * para detectar equipar/desequipar entre ticks. Estado interno, no se persiste.
-     */
     final Map<String, ItemStack> lastEquipped = new HashMap<>();
 
-    /**
-     * FIX (issue #4 - "al unirte con algo equipado, vuelve a sonar el equipamiento"): tanto al
-     * cargar la entidad desde disco ({@code readAdditionalSaveData}) como al recibir el paquete
-     * de sync inicial en el cliente, esta instancia de {@link LivingEntitySlotComponent} es
-     * NUEVA - se construye en blanco y recien despues {@link #readFromNbt} le carga los items
-     * dentro de los {@code SlotInventory}. Como {@link #lastEquipped} arranca vacio, el primer
-     * {@link SlotTicker#tick} que corre despues del load ve cada item ya equipado como "recien
-     * equipado" (oldStack=EMPTY, newStack=item cargado) y dispara TODO el flujo de equipar - lo
-     * cual es correcto para los modificadores de atributo transitorios (no se persisten, hay que
-     * reaplicarlos) pero NO para el sonido (el jugador no acaba de equiparse nada, solo se
-     * reconecto). Este flag deja que {@link SlotTicker} distinga ambos casos: se prende aca, al
-     * terminar de cargar el NBT, y {@code SlotTicker} lo apaga despues de procesar ese primer
-     * tick, saltando unicamente la reproduccion de sonido mientras esta prendido.
-     */
     boolean justLoaded = false;
 
     public LivingEntitySlotComponent(LivingEntity entity) {
@@ -101,23 +71,33 @@ public class LivingEntitySlotComponent implements SlotComponent {
                     SlotInventory oldInv = oldGroup.get(slot.getKey());
                     if (oldInv != null) {
                         inv.copyFrom(oldInv);
-                        for (int i = 0; i < oldInv.getContainerSize(); i++) {
-                            ItemStack stack = oldInv.getItem(i).copy();
-                            if (i < inv.getContainerSize()) {
-                                inv.setItem(i, stack);
-                            } else if (!stack.isEmpty()) {
-                                if (this.entity instanceof Player player) {
-                                    player.getInventory().placeItemBackInInventory(stack);
-                                } else if (this.entity.level() instanceof ServerLevel serverLevel) {
-                                    this.entity.spawnAtLocation(stack);
-                                }
-                            }
-                        }
                     }
                 }
                 newInventory.computeIfAbsent(group.getKey(), k -> new HashMap<>()).put(slot.getKey(), inv);
             }
         }
+
+        for (Map.Entry<String, Map<String, SlotInventory>> oldGroupEntry : this.inventory.entrySet()) {
+            Map<String, SlotInventory> newGroup = newInventory.get(oldGroupEntry.getKey());
+            for (Map.Entry<String, SlotInventory> oldSlotEntry : oldGroupEntry.getValue().entrySet()) {
+                if (newGroup != null && newGroup.containsKey(oldSlotEntry.getKey())) {
+                    continue;
+                }
+                SlotInventory removedInv = oldSlotEntry.getValue();
+                for (int i = 0; i < removedInv.getContainerSize(); i++) {
+                    ItemStack stack = removedInv.getItem(i).copy();
+                    if (stack.isEmpty()) {
+                        continue;
+                    }
+                    if (this.entity instanceof Player player) {
+                        player.getInventory().placeItemBackInInventory(stack);
+                    } else if (this.entity.level() instanceof ServerLevel) {
+                        this.entity.spawnAtLocation(stack);
+                    }
+                }
+            }
+        }
+
         this.inventory = newInventory;
     }
 
@@ -221,9 +201,6 @@ public class LivingEntitySlotComponent implements SlotComponent {
                 }
             }
         }
-        // Ver el javadoc de "justLoaded": el proximo SlotTicker#tick va a ver estos items como
-        // "recien equipados" contra un lastEquipped vacio; que reaplique modificadores esta bien,
-        // pero no tiene que sonar como si el jugador hubiera equipado algo de nuevo.
         this.justLoaded = true;
     }
 

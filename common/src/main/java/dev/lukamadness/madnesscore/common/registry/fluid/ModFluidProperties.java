@@ -2,12 +2,6 @@ package dev.lukamadness.madnesscore.common.registry.fluid;
 
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * Descripcion 100% agnostica de loader de como se ve y comporta un fluido.
- * FabricFluidRegistryHelper la usa para el FluidRenderHandler (client).
- * NeoForgeFluidRegistryHelper la usa para el FluidType (common) y sus
- * IClientFluidTypeExtensions (client).
- */
 public final class ModFluidProperties {
     private final ResourceLocation stillTexture;
     private final ResourceLocation flowingTexture;

@@ -27,17 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Reload listener (datapack, carpeta "data/&lt;namespace&gt;/slots/&lt;group&gt;/...") que arma
- * las definiciones de {@link SlotType} agrupadas. Cada carpeta bajo "slots" es un grupo; dentro
- * de esa carpeta, "group.json" define metadata del grupo (slot_id, order) y cualquier otro archivo
- * define un slot individual (ej: "slots/hand/ring.json" -> slot "ring" del grupo "hand").
- * <p>
- * Portado de dev.emi.trinkets.data.SlotLoader, sin dependencias de Fabric API (funciona igual en
- * Fabric y NeoForge ya que solo usa clases vanilla).
- */
 public class SlotGroupReloadListener extends SimplePreparableReloadListener<Map<String, SlotGroupReloadListener.GroupData>> {
-
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(MadnessCoreCommon.MOD_ID, "slots");
     private static final String DATA_TYPE = "slots";
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
@@ -56,7 +46,6 @@ public class SlotGroupReloadListener extends SimplePreparableReloadListener<Map<
             try {
                 stack = resourceManager.getResourceStack(identifier);
             } catch (Exception e) {
-                MadnessCoreCommon.LOG.error("[madnesscore] No se pudo obtener el stack de recursos para {}", identifier, e);
                 continue;
             }
 
@@ -84,12 +73,10 @@ public class SlotGroupReloadListener extends SimplePreparableReloadListener<Map<
                             SlotData slot = group.slots.computeIfAbsent(fileName, k -> new SlotData());
                             slot.read(jsonObject);
                         }
-                    } catch (JsonSyntaxException e) {
-                        MadnessCoreCommon.LOG.error("[madnesscore] Error de sintaxis leyendo {}", path, e);
+                    } catch (JsonSyntaxException ignored) {
                     }
                 }
-            } catch (IOException e) {
-                MadnessCoreCommon.LOG.error("[madnesscore] Error de IO leyendo datos de slots para {}", identifier, e);
+            } catch (IOException ignored) {
             }
         }
         return map;
@@ -163,11 +150,6 @@ public class SlotGroupReloadListener extends SimplePreparableReloadListener<Map<
                 dropRule = jsonDropRule;
             }
 
-            // Opt-in explicito para que este slot type actue como espejo de SOLO LECTURA de un
-            // EquipmentSlot vainilla real (stats/efectos) cuando ese slot esta vacio - nunca
-            // copia ni mueve el item a ningun lado. Default false: la mayoria de los slots (ej.
-            // "head/face") son cosmeticos/accesorios y no representan armadura real. Ver javadoc
-            // de SlotType(..., mirrorsVanillaEquipment) y VanillaEquipmentMirror.
             mirrorsVanillaEquipment = GsonHelper.getAsBoolean(json, "mirror_vanilla_equipment", mirrorsVanillaEquipment);
         }
 

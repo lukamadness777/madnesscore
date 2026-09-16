@@ -1,0 +1,10 @@
+{
+  "type": "madnesscore:tailoring",
+  "ingredients": [
+    { "ingredient": { "item": "minecraft:leather" }, "count": 4 }
+  ],
+  "output": {
+    "id": "minecraft:leather_boots",
+    "count": 1
+  }
+}

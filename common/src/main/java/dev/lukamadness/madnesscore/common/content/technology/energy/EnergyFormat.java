@@ -1,10 +1,9 @@
-// common/tecnology/energy/EnergyFormat.java
+
 package dev.lukamadness.madnesscore.common.content.technology.energy;
 
 import java.util.Locale;
 
 public final class EnergyFormat {
-
     private EnergyFormat() {}
 
     public static String format(long value) {
@@ -20,5 +19,17 @@ public final class EnergyFormat {
                 ? String.valueOf((long) scaled)
                 : String.format(Locale.ROOT, "%.1f", scaled);
         return number + suffix;
+    }
+
+    public static String formatExact(long value) {
+        String digits = Long.toString(Math.abs(value));
+        StringBuilder grouped = new StringBuilder();
+        int count = 0;
+        for (int i = digits.length() - 1; i >= 0; i--) {
+            grouped.append(digits.charAt(i));
+            count++;
+            if (count % 3 == 0 && i != 0) grouped.append('.');
+        }
+        return (value < 0 ? "-" : "") + grouped.reverse();
     }
 }

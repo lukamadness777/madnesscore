@@ -1,9 +1,10 @@
-// common/tecnology/blocks/AlloySmelteryBlockEntity.java
 package dev.lukamadness.madnesscore.common.content.technology.blocks;
 
 import dev.lukamadness.madnesscore.common.registry.blockentity.ModBlockEntities;
 import dev.lukamadness.madnesscore.common.registry.recipe.ModRecipes;
+import dev.lukamadness.madnesscore.common.content.technology.heat.HeatConduction;
 import dev.lukamadness.madnesscore.common.content.technology.heat.HeatEnvironment;
+import dev.lukamadness.madnesscore.common.content.technology.heat.HeatFuelRegistry;
 import dev.lukamadness.madnesscore.common.content.technology.heat.HeatReceiver;
 import dev.lukamadness.madnesscore.common.content.technology.heat.ModHeatStorage;
 import dev.lukamadness.madnesscore.common.content.technology.recipe.AlloySmeltingRecipe;
@@ -33,29 +34,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Recreación de IndustrialSmelterBlockEntity, renombrado a Alloy Smeltery. 4 inputs,
- * 4 outputs, pero corre a HEAT directo (HeatReceiver) — no a Energy convertida. Además
- * exige una temperatura mínima ({@link #MIN_TEMPERATURE}, 800°C) para poder procesar:
- * aunque tenga Heat de sobra almacenado, si el sistema todavía no llegó a esa
- * temperatura no funciona (ver HeatReceiver.getMinTemperature() / HeatGeneratorBlockEntity,
- * que es quien sube la temperatura de este bloque mientras le empuja Heat).
- */
 public class AlloySmelteryBlockEntity extends BlockEntity implements Container, MenuProvider, HeatReceiver {
-
     public static final int INPUT_SLOTS = 4;
     public static final int OUTPUT_SLOTS = 4;
     public static final int TOTAL_SLOTS = INPUT_SLOTS + OUTPUT_SLOTS;
 
-    public static final int HEAT_CAPACITY = 15_000;
-    public static final int MAX_HEAT_RECEIVE = 8; // Heat/tick, mismo tope que empuja HeatGeneratorBlockEntity
+    public static final double MIN_TEMPERATURE = 600.0;
 
-    /** Temperatura mínima (°C) para poder procesar, tal como se definió en el diseño. */
-    public static final double MIN_TEMPERATURE = 800.0;
-
-    // slots 0-3 = input, slots 4-7 = output
     private NonNullList<ItemStack> items = NonNullList.withSize(TOTAL_SLOTS, ItemStack.EMPTY);
-    private final ModHeatStorage heatStorage = new ModHeatStorage(HEAT_CAPACITY, MAX_HEAT_RECEIVE, 0, this::setChanged);
+    private final ModHeatStorage heatStorage = new ModHeatStorage(this::setChanged);
 
     private int progress;
     private int maxProgress = 200;
@@ -64,8 +51,8 @@ public class AlloySmelteryBlockEntity extends BlockEntity implements Container, 
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> heatStorage.getHeat();
-                case 1 -> heatStorage.getCapacity();
+                case 0 -> (int) Math.round(heatStorage.getTemperature());
+                case 1 -> (int) Math.round(HeatFuelRegistry.getMaxHeatTemperature(level));
                 case 2 -> progress;
                 case 3 -> maxProgress;
                 default -> 0;
@@ -75,7 +62,7 @@ public class AlloySmelteryBlockEntity extends BlockEntity implements Container, 
         @Override
         public void set(int index, int value) {
             switch (index) {
-                case 0 -> heatStorage.setHeat(value);
+                case 0 -> heatStorage.setTemperature(value);
                 case 2 -> progress = value;
                 case 3 -> maxProgress = value;
             }
@@ -96,6 +83,17 @@ public class AlloySmelteryBlockEntity extends BlockEntity implements Container, 
         boolean wasPowered = state.getValue(AlloySmelteryBlock.POWERED);
         boolean dirty = false;
 
+        double gain = HeatConduction.gatherFromHotterNeighbors(level, pos, entity.heatStorage);
+        if (gain > 0) {
+            gain *= HeatEnvironment.heatGainMultiplier(level, pos);
+            double maxTemperature = HeatFuelRegistry.getMaxHeatTemperature(level);
+            if (entity.heatStorage.addTemperature(gain, ModHeatStorage.AMBIENT_TEMPERATURE, maxTemperature)) dirty = true;
+        } else {
+            double lossMultiplier = HeatEnvironment.lossMultiplier(level, pos);
+            if (entity.heatStorage.approachTemperature(ModHeatStorage.AMBIENT_TEMPERATURE,
+                    HeatEnvironment.BASE_TEMPERATURE_LOSS_RATE * lossMultiplier)) dirty = true;
+        }
+
         List<ItemStack> inputStacks = new ArrayList<>(INPUT_SLOTS);
         for (int i = 0; i < INPUT_SLOTS; i++) inputStacks.add(entity.items.get(i));
         AlloySmelteryRecipeInput recipeInput = new AlloySmelteryRecipeInput(inputStacks);
@@ -108,13 +106,9 @@ public class AlloySmelteryBlockEntity extends BlockEntity implements Container, 
             int[] assignment = recipe.findAssignment(recipeInput);
 
             boolean canOutput = canInsertAllOutputs(entity, recipe.getOutputs());
-            // Necesita Heat de sobra Y que el sistema ya haya llegado a MIN_TEMPERATURE —
-            // tener Heat almacenado no alcanza si todavía no está lo bastante caliente.
-            boolean hasHeat = entity.heatStorage.getHeat() >= recipe.getHeatPerTick();
             boolean hotEnough = entity.isHotEnough();
 
-            if (assignment != null && canOutput && hasHeat && hotEnough) {
-                entity.heatStorage.drain(recipe.getHeatPerTick());
+            if (assignment != null && canOutput && hotEnough) {
                 entity.maxProgress = recipe.getProcessTime();
                 entity.progress++;
                 dirty = true;
@@ -131,13 +125,6 @@ public class AlloySmelteryBlockEntity extends BlockEntity implements Container, 
             entity.progress = 0;
             dirty = true;
         }
-
-        // Pérdida ambiental de temperatura, mismo ritmo base que el Heat Generator (ver
-        // HeatEnvironment) — sin esto, una vez caliente se quedaría a MIN_TEMPERATURE para
-        // siempre aunque el Heat Generator se apague o se desconecte.
-        double lossMultiplier = HeatEnvironment.lossMultiplier(level, pos);
-        entity.heatStorage.coolTowards(ModHeatStorage.AMBIENT_TEMPERATURE,
-                HeatEnvironment.BASE_TEMPERATURE_LOSS_PER_TICK * lossMultiplier);
 
         boolean isLit = entity.progress > 0;
         boolean isPowered = entity.isHotEnough();
@@ -233,7 +220,6 @@ public class AlloySmelteryBlockEntity extends BlockEntity implements Container, 
         return new AlloySmelteryScreenHandler(syncId, inv, this, containerData);
     }
 
-    // --- Container ---
     @Override public int getContainerSize() { return items.size(); }
     @Override public boolean isEmpty() { return items.stream().allMatch(ItemStack::isEmpty); }
     @Override public ItemStack getItem(int slot) { return items.get(slot); }
